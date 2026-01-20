@@ -1,0 +1,2152 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "domain": "numeracy",
+    "totalTemplates": 150,
+    "distribution": {
+      "year3": 50,
+      "year5": 50,
+      "year7": 50
+    },
+    "testStructure": {
+      "year3": {
+        "questionCount": 35,
+        "timeLimit": 45,
+        "calculator": false
+      },
+      "year5": {
+        "questionCount": 40,
+        "timeLimit": 50,
+        "calculator": false
+      },
+      "year7": {
+        "questionCount": 48,
+        "timeLimit": 60,
+        "calculator": "after_question_8"
+      }
+    },
+    "lastUpdated": "2026-01-20",
+    "description": "Complete numeracy template library for NAPLAN practice MVP - generates infinite unique questions"
+  },
+  "year3": [
+    {
+      "id": "Y3-NUM-001",
+      "topic": "Counting & Place Value",
+      "curriculum": "VCMNA106",
+      "difficulty": "easy",
+      "template": "What number comes after {NUMBER}?",
+      "params": {
+        "NUMBER": {"type": "integer", "min": 1000, "max": 9998}
+      },
+      "correctAnswer": "{NUMBER} + 1",
+      "answerType": "multipleChoice",
+      "distractors": ["{NUMBER} - 1", "{NUMBER} + 10", "{NUMBER} + 2"]
+    },
+    {
+      "id": "Y3-NUM-002",
+      "topic": "Place Value",
+      "curriculum": "VCMNA108",
+      "difficulty": "medium",
+      "template": "What is the value of the digit {DIGIT} in the number {NUMBER}?",
+      "params": {
+        "NUMBER": {"type": "integer", "min": 2000, "max": 9999},
+        "DIGIT": {"type": "extractDigit", "from": "NUMBER"}
+      },
+      "correctAnswer": "placeValue({NUMBER}, {DIGIT})",
+      "answerType": "multipleChoice",
+      "distractors": ["wrongPlaceValue({NUMBER}, {DIGIT}, 3)"]
+    },
+    {
+      "id": "Y3-NUM-003",
+      "topic": "Addition - 3 digit",
+      "curriculum": "VCMNA111",
+      "difficulty": "medium",
+      "template": "{NUM1} + {NUM2} = ?",
+      "params": {
+        "NUM1": {"type": "integer", "min": 100, "max": 999},
+        "NUM2": {"type": "integer", "min": 100, "max": 999}
+      },
+      "correctAnswer": "{NUM1} + {NUM2}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y3-NUM-004",
+      "topic": "Addition - Word Problem",
+      "curriculum": "VCMNA111",
+      "difficulty": "medium",
+      "template": "{NAME} has {NUM1} marbles. {NAME2} gives {NAME} {NUM2} more marbles. How many marbles does {NAME} have now?",
+      "params": {
+        "NAME": {"type": "name"},
+        "NAME2": {"type": "name"},
+        "NUM1": {"type": "integer", "min": 50, "max": 300},
+        "NUM2": {"type": "integer", "min": 20, "max": 150}
+      },
+      "correctAnswer": "{NUM1} + {NUM2}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y3-NUM-005",
+      "topic": "Subtraction - 3 digit",
+      "curriculum": "VCMNA111",
+      "difficulty": "medium",
+      "template": "{NUM1} - {NUM2} = ?",
+      "params": {
+        "NUM1": {"type": "integer", "min": 200, "max": 999},
+        "NUM2": {"type": "integer", "min": 50, "max": 400, "constraint": "< NUM1"}
+      },
+      "correctAnswer": "{NUM1} - {NUM2}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y3-NUM-006",
+      "topic": "Multiplication - Tables",
+      "curriculum": "VCMNA112",
+      "difficulty": "medium",
+      "template": "{NUM1} × {NUM2} = ?",
+      "params": {
+        "NUM1": {"type": "integer", "min": 2, "max": 10},
+        "NUM2": {"type": "integer", "min": 2, "max": 10}
+      },
+      "correctAnswer": "{NUM1} * {NUM2}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y3-NUM-007",
+      "topic": "Multiplication - Arrays",
+      "curriculum": "VCMNA112",
+      "difficulty": "medium",
+      "template": "There are {ROWS} rows of {ITEM} with {COLS} {ITEM} in each row. How many {ITEM} are there in total?",
+      "params": {
+        "ROWS": {"type": "integer", "min": 2, "max": 10},
+        "COLS": {"type": "integer", "min": 2, "max": 10},
+        "ITEM": {"type": "choice", "options": ["chairs", "desks", "books", "apples", "pencils"]}
+      },
+      "correctAnswer": "{ROWS} * {COLS}",
+      "answerType": "numeric",
+      "visual": {
+        "type": "array",
+        "rows": "{ROWS}",
+        "cols": "{COLS}"
+      }
+    },
+    {
+      "id": "Y3-NUM-008",
+      "topic": "Division - Basic",
+      "curriculum": "VCMNA112",
+      "difficulty": "medium",
+      "template": "{NUM1} ÷ {NUM2} = ?",
+      "params": {
+        "NUM2": {"type": "integer", "min": 2, "max": 10},
+        "NUM1": {"type": "computed", "formula": "{NUM2} * randomInt(2, 10)"}
+      },
+      "correctAnswer": "{NUM1} / {NUM2}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y3-NUM-009",
+      "topic": "Division - Sharing",
+      "curriculum": "VCMNA112",
+      "difficulty": "medium",
+      "template": "{NUM1} {ITEM} are shared equally among {NUM2} people. How many {ITEM} does each person get?",
+      "params": {
+        "NUM2": {"type": "integer", "min": 2, "max": 8},
+        "NUM1": {"type": "computed", "formula": "{NUM2} * randomInt(3, 12)"},
+        "ITEM": {"type": "choice", "options": ["cookies", "stickers", "cards", "marbles"]}
+      },
+      "correctAnswer": "{NUM1} / {NUM2}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y3-NUM-010",
+      "topic": "Fractions - Recognition",
+      "curriculum": "VCMNA113",
+      "difficulty": "medium",
+      "template": "What fraction of this circle is shaded?",
+      "params": {
+        "DENOMINATOR": {"type": "choice", "options": [2, 3, 4, 6, 8]},
+        "NUMERATOR": {"type": "integer", "min": 1, "max": 5, "constraint": "< DENOMINATOR"}
+      },
+      "visual": {
+        "type": "fractionCircle",
+        "numerator": "{NUMERATOR}",
+        "denominator": "{DENOMINATOR}"
+      },
+      "correctAnswer": "{NUMERATOR}/{DENOMINATOR}",
+      "answerType": "multipleChoice",
+      "distractors": ["fractionDistractors({NUMERATOR}, {DENOMINATOR}, 3)"]
+    },
+    {
+      "id": "Y3-NUM-011",
+      "topic": "Fractions - Half & Quarter",
+      "curriculum": "VCMNA113",
+      "difficulty": "easy",
+      "template": "What is {FRACTION} of {NUMBER}?",
+      "params": {
+        "FRACTION": {"type": "choice", "options": ["1/2", "1/4"]},
+        "NUMBER": {"type": "choice", "options": [8, 12, 16, 20, 24]}
+      },
+      "correctAnswer": "fractionOf({FRACTION}, {NUMBER})",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y3-NUM-012",
+      "topic": "Fractions - Collections",
+      "curriculum": "VCMNA114",
+      "difficulty": "hard",
+      "template": "There are {TOTAL} {ITEM}. {FRACTION} of them are {COLOR}. How many {COLOR} {ITEM} are there?",
+      "params": {
+        "TOTAL": {"type": "choice", "options": [6, 8, 10, 12, 16, 20]},
+        "FRACTION": {"type": "choice", "options": ["1/2", "1/3", "1/4"]},
+        "ITEM": {"type": "choice", "options": ["apples", "balls", "books"]},
+        "COLOR": {"type": "choice", "options": ["red", "blue", "green"]}
+      },
+      "correctAnswer": "fractionOf({FRACTION}, {TOTAL})",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y3-NUM-013",
+      "topic": "Money - Counting",
+      "curriculum": "VCMNA115",
+      "difficulty": "medium",
+      "template": "How much money is shown?",
+      "params": {
+        "DOLLARS": {"type": "integer", "min": 0, "max": 20},
+        "CENTS": {"type": "choice", "options": [0, 50]}
+      },
+      "visual": {
+        "type": "coins",
+        "amount": "{DOLLARS}.{CENTS}"
+      },
+      "correctAnswer": "{DOLLARS}.{CENTS}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y3-NUM-014",
+      "topic": "Money - Change",
+      "curriculum": "VCMNA115",
+      "difficulty": "medium",
+      "template": "{NAME} buys a {ITEM} for ${COST}. {NAME} pays with ${PAYMENT}. How much change does {NAME} get?",
+      "params": {
+        "NAME": {"type": "name"},
+        "ITEM": {"type": "choice", "options": ["toy", "book", "game"]},
+        "COST": {"type": "decimal", "min": 3.50, "max": 9.50, "step": 0.50},
+        "PAYMENT": {"type": "choice", "options": [10, 20], "constraint": "> COST"}
+      },
+      "correctAnswer": "{PAYMENT} - {COST}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y3-NUM-015",
+      "topic": "Time - Reading Clocks",
+      "curriculum": "VCMNA116",
+      "difficulty": "medium",
+      "template": "What time is shown on the clock?",
+      "params": {
+        "HOUR": {"type": "integer", "min": 1, "max": 12},
+        "MINUTE": {"type": "choice", "options": [0, 15, 30, 45]}
+      },
+      "visual": {
+        "type": "analogClock",
+        "hour": "{HOUR}",
+        "minute": "{MINUTE}"
+      },
+      "correctAnswer": "formatTime({HOUR}, {MINUTE})",
+      "answerType": "multipleChoice",
+      "distractors": ["timeDistractors({HOUR}, {MINUTE}, 3)"]
+    },
+    {
+      "id": "Y3-NUM-016",
+      "topic": "Time - Duration",
+      "curriculum": "VCMNA116",
+      "difficulty": "hard",
+      "template": "A movie starts at {START} and ends at {END}. How long is the movie in minutes?",
+      "params": {
+        "START": {"type": "time", "format": "hh:mm"},
+        "END": {"type": "time", "format": "hh:mm", "constraint": "> START && < START + 3 hours"}
+      },
+      "correctAnswer": "duration({START}, {END})",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y3-NUM-017",
+      "topic": "Length - cm to mm",
+      "curriculum": "VCMNA117",
+      "difficulty": "medium",
+      "template": "A pencil is {LENGTH} cm long. How many millimetres is this?",
+      "params": {
+        "LENGTH": {"type": "integer", "min": 10, "max": 25}
+      },
+      "correctAnswer": "{LENGTH} * 10",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y3-NUM-018",
+      "topic": "Mass - kg to g",
+      "curriculum": "VCMNA117",
+      "difficulty": "medium",
+      "template": "A bag weighs {MASS} kilograms. How many grams is this?",
+      "params": {
+        "MASS": {"type": "integer", "min": 1, "max": 5}
+      },
+      "correctAnswer": "{MASS} * 1000",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y3-NUM-019",
+      "topic": "Capacity - L to mL",
+      "curriculum": "VCMNA118",
+      "difficulty": "medium",
+      "template": "A bottle holds {CAPACITY} litres. How many millilitres is this?",
+      "params": {
+        "CAPACITY": {"type": "integer", "min": 1, "max": 3}
+      },
+      "correctAnswer": "{CAPACITY} * 1000",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y3-NUM-020",
+      "topic": "Shapes - Sides",
+      "curriculum": "VCMNA119",
+      "difficulty": "easy",
+      "template": "How many sides does a {SHAPE} have?",
+      "params": {
+        "SHAPE": {"type": "choice", "options": ["triangle", "square", "rectangle", "pentagon", "hexagon"]}
+      },
+      "correctAnswer": "shapeSides({SHAPE})",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y3-NUM-021",
+      "topic": "Shapes - 3D Properties",
+      "curriculum": "VCMNA119",
+      "difficulty": "hard",
+      "template": "A {SHAPE3D} has how many {PROPERTY}?",
+      "params": {
+        "SHAPE3D": {"type": "choice", "options": ["cube", "rectangular prism", "cylinder"]},
+        "PROPERTY": {"type": "choice", "options": ["faces", "edges", "vertices"]}
+      },
+      "correctAnswer": "shape3DProperty({SHAPE3D}, {PROPERTY})",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y3-NUM-022",
+      "topic": "Data - Bar Graph",
+      "curriculum": "VCMNA120",
+      "difficulty": "easy",
+      "template": "According to the graph, how many students chose {CATEGORY}?",
+      "params": {
+        "DATA": {"type": "barGraph", "categories": 4},
+        "CATEGORY": {"type": "extractCategory", "from": "DATA"}
+      },
+      "visual": {
+        "type": "barGraph",
+        "data": "{DATA}",
+        "title": "Favourite Fruits"
+      },
+      "correctAnswer": "dataValue({DATA}, {CATEGORY})",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y3-NUM-023",
+      "topic": "Data - Comparison",
+      "curriculum": "VCMNA120",
+      "difficulty": "medium",
+      "template": "Which category had the most?",
+      "params": {
+        "DATA": {"type": "barGraph", "categories": 4}
+      },
+      "visual": {
+        "type": "barGraph",
+        "data": "{DATA}",
+        "title": "Favourite Sports"
+      },
+      "correctAnswer": "maxCategory({DATA})",
+      "answerType": "multipleChoice",
+      "distractors": ["otherCategories({DATA}, 3)"]
+    },
+    {
+      "id": "Y3-NUM-024",
+      "topic": "Patterns - Addition",
+      "curriculum": "VCMNA121",
+      "difficulty": "medium",
+      "template": "What number comes next? {NUM1}, {NUM2}, {NUM3}, ?",
+      "params": {
+        "NUM1": {"type": "integer", "min": 5, "max": 20},
+        "STEP": {"type": "choice", "options": [2, 3, 5, 10]},
+        "NUM2": {"type": "computed", "formula": "{NUM1} + {STEP}"},
+        "NUM3": {"type": "computed", "formula": "{NUM2} + {STEP}"}
+      },
+      "correctAnswer": "{NUM3} + {STEP}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y3-NUM-025",
+      "topic": "Patterns - Skip Counting",
+      "curriculum": "VCMNA121",
+      "difficulty": "medium",
+      "template": "Complete: {START}, ___, {THIRD}",
+      "params": {
+        "STEP": {"type": "choice", "options": [2, 5, 10]},
+        "START": {"type": "integer", "min": 10, "max": 50},
+        "THIRD": {"type": "computed", "formula": "{START} + {STEP} * 2"}
+      },
+      "correctAnswer": "{START} + {STEP}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y3-NUM-026",
+      "topic": "Number Lines",
+      "curriculum": "VCMNA107",
+      "difficulty": "easy",
+      "template": "What number is shown by the arrow?",
+      "params": {
+        "NUMBER": {"type": "integer", "min": 100, "max": 500}
+      },
+      "visual": {
+        "type": "numberLine",
+        "min": 0,
+        "max": 600,
+        "marked": "{NUMBER}"
+      },
+      "correctAnswer": "{NUMBER}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y3-NUM-027",
+      "topic": "Comparison - Greater/Less",
+      "curriculum": "VCMNA107",
+      "difficulty": "easy",
+      "template": "Which symbol makes this true? {NUM1} ___ {NUM2}",
+      "params": {
+        "NUM1": {"type": "integer", "min": 100, "max": 999},
+        "NUM2": {"type": "integer", "min": 100, "max": 999}
+      },
+      "correctAnswer": "compareSymbol({NUM1}, {NUM2})",
+      "answerType": "multipleChoice",
+      "distractors": ["<", ">", "="].filter(s => s !== correct)
+    },
+    {
+      "id": "Y3-NUM-028",
+      "topic": "Rounding - Nearest 10",
+      "curriculum": "VCMNA108",
+      "difficulty": "medium",
+      "template": "Round {NUMBER} to the nearest 10",
+      "params": {
+        "NUMBER": {"type": "integer", "min": 100, "max": 999}
+      },
+      "correctAnswer": "round({NUMBER}, 10)",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y3-NUM-029",
+      "topic": "Rounding - Nearest 100",
+      "curriculum": "VCMNA108",
+      "difficulty": "medium",
+      "template": "Round {NUMBER} to the nearest 100",
+      "params": {
+        "NUMBER": {"type": "integer", "min": 100, "max": 9999}
+      },
+      "correctAnswer": "round({NUMBER}, 100)",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y3-NUM-030",
+      "topic": "Mixed Operations",
+      "curriculum": "VCMNA111",
+      "difficulty": "hard",
+      "template": "{NUM1} + {NUM2} - {NUM3} = ?",
+      "params": {
+        "NUM1": {"type": "integer", "min": 50, "max": 200},
+        "NUM2": {"type": "integer", "min": 20, "max": 100},
+        "NUM3": {"type": "integer", "min": 10, "max": 50}
+      },
+      "correctAnswer": "{NUM1} + {NUM2} - {NUM3}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y3-NUM-031",
+      "topic": "Area - Counting Squares",
+      "curriculum": "VCMNA118",
+      "difficulty": "medium",
+      "template": "How many squares are in this rectangle?",
+      "params": {
+        "LENGTH": {"type": "integer", "min": 3, "max": 6},
+        "WIDTH": {"type": "integer", "min": 2, "max": 5}
+      },
+      "visual": {
+        "type": "gridRectangle",
+        "length": "{LENGTH}",
+        "width": "{WIDTH}"
+      },
+      "correctAnswer": "{LENGTH} * {WIDTH}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y3-NUM-032",
+      "topic": "Perimeter - Simple",
+      "curriculum": "VCMNA118",
+      "difficulty": "hard",
+      "template": "What is the perimeter of a rectangle with length {LENGTH} cm and width {WIDTH} cm?",
+      "params": {
+        "LENGTH": {"type": "integer", "min": 4, "max": 12},
+        "WIDTH": {"type": "integer", "min": 2, "max": 8}
+      },
+      "correctAnswer": "2 * ({LENGTH} + {WIDTH})",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y3-NUM-033",
+      "topic": "Multiplication - Groups",
+      "curriculum": "VCMNA112",
+      "difficulty": "medium",
+      "template": "{NUM1} groups of {NUM2} = ?",
+      "params": {
+        "NUM1": {"type": "integer", "min": 2, "max": 10},
+        "NUM2": {"type": "integer", "min": 2, "max": 10}
+      },
+      "correctAnswer": "{NUM1} * {NUM2}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y3-NUM-034",
+      "topic": "Even/Odd",
+      "curriculum": "VCMNA107",
+      "difficulty": "easy",
+      "template": "Is {NUMBER} even or odd?",
+      "params": {
+        "NUMBER": {"type": "integer", "min": 10, "max": 99}
+      },
+      "correctAnswer": "evenOdd({NUMBER})",
+      "answerType": "multipleChoice",
+      "distractors": ["even", "odd"].filter(a => a !== correct)
+    },
+    {
+      "id": "Y3-NUM-035",
+      "topic": "Doubling",
+      "curriculum": "VCMNA111",
+      "difficulty": "easy",
+      "template": "What is double {NUMBER}?",
+      "params": {
+        "NUMBER": {"type": "integer", "min": 10, "max": 50}
+      },
+      "correctAnswer": "{NUMBER} * 2",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y3-NUM-036",
+      "topic": "Halving",
+      "curriculum": "VCMNA111",
+      "difficulty": "medium",
+      "template": "What is half of {NUMBER}?",
+      "params": {
+        "NUMBER": {"type": "integer", "min": 20, "max": 100, "constraint": "even"}
+      },
+      "correctAnswer": "{NUMBER} / 2",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y3-NUM-037",
+      "topic": "Ordering Numbers",
+      "curriculum": "VCMNA107",
+      "difficulty": "medium",
+      "template": "Arrange from smallest to largest: {NUM1}, {NUM2}, {NUM3}",
+      "params": {
+        "NUM1": {"type": "integer", "min": 100, "max": 999},
+        "NUM2": {"type": "integer", "min": 100, "max": 999},
+        "NUM3": {"type": "integer", "min": 100, "max": 999}
+      },
+      "correctAnswer": "sortNumbers([{NUM1}, {NUM2}, {NUM3}])",
+      "answerType": "multipleChoice",
+      "distractors": ["orderingDistractors([{NUM1}, {NUM2}, {NUM3}], 3)"]
+    },
+    {
+      "id": "Y3-NUM-038",
+      "topic": "Missing Number - Addition",
+      "curriculum": "VCMNA111",
+      "difficulty": "hard",
+      "template": "{NUM1} + ___ = {SUM}",
+      "params": {
+        "NUM1": {"type": "integer", "min": 50, "max": 300},
+        "ADDEND": {"type": "integer", "min": 20, "max": 200},
+        "SUM": {"type": "computed", "formula": "{NUM1} + {ADDEND}"}
+      },
+      "correctAnswer": "{ADDEND}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y3-NUM-039",
+      "topic": "Missing Number - Subtraction",
+      "curriculum": "VCMNA111",
+      "difficulty": "hard",
+      "template": "___ - {NUM2} = {RESULT}",
+      "params": {
+        "NUM2": {"type": "integer", "min": 50, "max": 300},
+        "RESULT": {"type": "integer", "min": 100, "max": 400},
+        "NUM1": {"type": "computed", "formula": "{NUM2} + {RESULT}"}
+      },
+      "correctAnswer": "{NUM1}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y3-NUM-040",
+      "topic": "Probability - Likelihood",
+      "curriculum": "VCMNA120",
+      "difficulty": "easy",
+      "template": "If you flip a coin, is getting heads: certain, likely, unlikely, or impossible?",
+      "params": {},
+      "correctAnswer": "likely",
+      "answerType": "multipleChoice",
+      "distractors": ["certain", "unlikely", "impossible"]
+    },
+    {
+      "id": "Y3-NUM-041",
+      "topic": "Symmetry - Lines",
+      "curriculum": "VCMNA119",
+      "difficulty": "medium",
+      "template": "How many lines of symmetry does this shape have?",
+      "params": {
+        "SHAPE": {"type": "choice", "options": ["square", "rectangle", "circle", "equilateral triangle"]}
+      },
+      "visual": {
+        "type": "shape",
+        "name": "{SHAPE}"
+      },
+      "correctAnswer": "symmetryLines({SHAPE})",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y3-NUM-042",
+      "topic": "Angles - Turns",
+      "curriculum": "VCMNA119",
+      "difficulty": "medium",
+      "template": "A quarter turn is the same as how many right angles?",
+      "params": {},
+      "correctAnswer": "1",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y3-NUM-043",
+      "topic": "Money - Total Cost",
+      "curriculum": "VCMNA115",
+      "difficulty": "medium",
+      "template": "A pen costs ${COST1} and a notebook costs ${COST2}. What is the total cost?",
+      "params": {
+        "COST1": {"type": "decimal", "min": 1.50, "max": 5.00, "step": 0.50},
+        "COST2": {"type": "decimal", "min": 2.00, "max": 8.00, "step": 0.50}
+      },
+      "correctAnswer": "{COST1} + {COST2}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y3-NUM-044",
+      "topic": "Estimation - Addition",
+      "curriculum": "VCMNA111",
+      "difficulty": "medium",
+      "template": "Estimate the answer to {NUM1} + {NUM2} by rounding to the nearest 10",
+      "params": {
+        "NUM1": {"type": "integer", "min": 45, "max": 95},
+        "NUM2": {"type": "integer", "min": 35, "max": 85}
+      },
+      "correctAnswer": "round({NUM1}, 10) + round({NUM2}, 10)",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y3-NUM-045",
+      "topic": "Fractions - Equivalent",
+      "curriculum": "VCMNA113",
+      "difficulty": "hard",
+      "template": "Which fraction is equal to 1/2?",
+      "params": {},
+      "correctAnswer": "randomEquivalent(1, 2)",
+      "answerType": "multipleChoice",
+      "distractors": ["nonEquivalentFractions(1, 2, 3)"]
+    },
+    {
+      "id": "Y3-NUM-046",
+      "topic": "Calendar - Days",
+      "curriculum": "VCMNA116",
+      "difficulty": "easy",
+      "template": "How many days are in {MONTH}?",
+      "params": {
+        "MONTH": {"type": "choice", "options": ["January", "February", "April", "June", "September"]}
+      },
+      "correctAnswer": "daysInMonth({MONTH})",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y3-NUM-047",
+      "topic": "Position - Grid",
+      "curriculum": "VCMNA119",
+      "difficulty": "medium",
+      "template": "What is at position ({X}, {Y}) on this grid?",
+      "params": {
+        "X": {"type": "integer", "min": 1, "max": 5},
+        "Y": {"type": "integer", "min": 1, "max": 5},
+        "GRID": {"type": "gridWithObjects", "size": "5x5"}
+      },
+      "visual": {
+        "type": "grid",
+        "data": "{GRID}"
+      },
+      "correctAnswer": "gridValue({GRID}, {X}, {Y})",
+      "answerType": "multipleChoice",
+      "distractors": ["otherGridValues({GRID}, 3)"]
+    },
+    {
+      "id": "Y3-NUM-048",
+      "topic": "Pictograph - Reading",
+      "curriculum": "VCMNA120",
+      "difficulty": "medium",
+      "template": "Each 🍎 represents {SCALE} apples. How many apples did {NAME} pick?",
+      "params": {
+        "SCALE": {"type": "choice", "options": [2, 5, 10]},
+        "NAME": {"type": "name"},
+        "COUNT": {"type": "integer", "min": 3, "max": 8},
+        "DATA": {"type": "pictograph", "scale": "{SCALE}"}
+      },
+      "visual": {
+        "type": "pictograph",
+        "data": "{DATA}"
+      },
+      "correctAnswer": "{COUNT} * {SCALE}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y3-NUM-049",
+      "topic": "Temperature",
+      "curriculum": "VCMNA117",
+      "difficulty": "medium",
+      "template": "The temperature is {TEMP1}°C. It rises by {RISE}°C. What is the new temperature?",
+      "params": {
+        "TEMP1": {"type": "integer", "min": 10, "max": 25},
+        "RISE": {"type": "integer", "min": 3, "max": 10}
+      },
+      "correctAnswer": "{TEMP1} + {RISE}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y3-NUM-050",
+      "topic": "Number Bonds to 100",
+      "curriculum": "VCMNA111",
+      "difficulty": "medium",
+      "template": "{NUM1} + ___ = 100",
+      "params": {
+        "NUM1": {"type": "integer", "min": 10, "max": 90}
+      },
+      "correctAnswer": "100 - {NUM1}",
+      "answerType": "numeric"
+    }
+  ],
+  "year5": [
+    {
+      "id": "Y5-NUM-001",
+      "topic": "Large Numbers - Place Value",
+      "curriculum": "VCMNA166",
+      "difficulty": "medium",
+      "template": "What is the value of the digit {DIGIT} in {NUMBER}?",
+      "params": {
+        "NUMBER": {"type": "integer", "min": 100000, "max": 999999},
+        "DIGIT": {"type": "extractDigit", "from": "NUMBER"}
+      },
+      "correctAnswer": "placeValue({NUMBER}, {DIGIT})",
+      "answerType": "multipleChoice",
+      "distractors": ["wrongPlaceValue({NUMBER}, {DIGIT}, 3)"]
+    },
+    {
+      "id": "Y5-NUM-002",
+      "topic": "Large Numbers - Ordering",
+      "curriculum": "VCMNA166",
+      "difficulty": "medium",
+      "template": "Order from smallest to largest: {NUM1}, {NUM2}, {NUM3}",
+      "params": {
+        "NUM1": {"type": "integer", "min": 10000, "max": 999999},
+        "NUM2": {"type": "integer", "min": 10000, "max": 999999},
+        "NUM3": {"type": "integer", "min": 10000, "max": 999999}
+      },
+      "correctAnswer": "sortNumbers([{NUM1}, {NUM2}, {NUM3}])",
+      "answerType": "multipleChoice",
+      "distractors": ["orderingDistractors([{NUM1}, {NUM2}, {NUM3}], 3)"]
+    },
+    {
+      "id": "Y5-NUM-003",
+      "topic": "Decimals - Place Value",
+      "curriculum": "VCMNA167",
+      "difficulty": "medium",
+      "template": "Round {DECIMAL} to {PLACES} decimal place(s)",
+      "params": {
+        "DECIMAL": {"type": "decimal", "min": 0.1, "max": 99.99, "places": 2},
+        "PLACES": {"type": "choice", "options": [0, 1]}
+      },
+      "correctAnswer": "round({DECIMAL}, {PLACES})",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y5-NUM-004",
+      "topic": "Decimals - Addition",
+      "curriculum": "VCMNA167",
+      "difficulty": "medium",
+      "template": "{DEC1} + {DEC2} = ?",
+      "params": {
+        "DEC1": {"type": "decimal", "min": 1.0, "max": 50.0, "places": 2},
+        "DEC2": {"type": "decimal", "min": 1.0, "max": 50.0, "places": 2}
+      },
+      "correctAnswer": "{DEC1} + {DEC2}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y5-NUM-005",
+      "topic": "Decimals - Subtraction",
+      "curriculum": "VCMNA167",
+      "difficulty": "medium",
+      "template": "{DEC1} - {DEC2} = ?",
+      "params": {
+        "DEC1": {"type": "decimal", "min": 10.0, "max": 99.9, "places": 1},
+        "DEC2": {"type": "decimal", "min": 1.0, "max": 50.0, "places": 1, "constraint": "< DEC1"}
+      },
+      "correctAnswer": "{DEC1} - {DEC2}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y5-NUM-006",
+      "topic": "Decimals - Multiplication",
+      "curriculum": "VCMNA167",
+      "difficulty": "hard",
+      "template": "{DEC} × {WHOLE} = ?",
+      "params": {
+        "DEC": {"type": "decimal", "min": 1.0, "max": 9.9, "places": 1},
+        "WHOLE": {"type": "integer", "min": 2, "max": 10}
+      },
+      "correctAnswer": "{DEC} * {WHOLE}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y5-NUM-007",
+      "topic": "Fractions - Addition Same Denominator",
+      "curriculum": "VCMNA168",
+      "difficulty": "medium",
+      "template": "{NUM1}/{DEN} + {NUM2}/{DEN} = ?",
+      "params": {
+        "DEN": {"type": "choice", "options": [4, 5, 8, 10]},
+        "NUM1": {"type": "integer", "min": 1, "max": 7, "constraint": "< DEN"},
+        "NUM2": {"type": "integer", "min": 1, "max": 7, "constraint": "< DEN && NUM1 + NUM2 < DEN * 2"}
+      },
+      "correctAnswer": "simplifyFraction({NUM1} + {NUM2}, {DEN})",
+      "answerType": "multipleChoice",
+      "distractors": ["fractionDistractors(({NUM1} + {NUM2}) + '/' + {DEN}, 3)"]
+    },
+    {
+      "id": "Y5-NUM-008",
+      "topic": "Fractions - Subtraction Same Denominator",
+      "curriculum": "VCMNA168",
+      "difficulty": "medium",
+      "template": "{NUM1}/{DEN} - {NUM2}/{DEN} = ?",
+      "params": {
+        "DEN": {"type": "choice", "options": [4, 5, 8, 10]},
+        "NUM1": {"type": "integer", "min": 3, "max": 9, "constraint": "< DEN"},
+        "NUM2": {"type": "integer", "min": 1, "max": 5, "constraint": "< NUM1"}
+      },
+      "correctAnswer": "simplifyFraction({NUM1} - {NUM2}, {DEN})",
+      "answerType": "multipleChoice",
+      "distractors": ["fractionDistractors(({NUM1} - {NUM2}) + '/' + {DEN}, 3)"]
+    },
+    {
+      "id": "Y5-NUM-009",
+      "topic": "Fractions - Equivalence",
+      "curriculum": "VCMNA169",
+      "difficulty": "hard",
+      "template": "Which fraction is equivalent to {NUM}/{DEN}?",
+      "params": {
+        "NUM": {"type": "integer", "min": 1, "max": 4},
+        "DEN": {"type": "choice", "options": [2, 4, 5]}
+      },
+      "correctAnswer": "generateEquivalent({NUM}, {DEN})",
+      "answerType": "multipleChoice",
+      "distractors": ["nonEquivalentFractions({NUM}, {DEN}, 3)"]
+    },
+    {
+      "id": "Y5-NUM-010",
+      "topic": "Percentages - Basic",
+      "curriculum": "VCMNA170",
+      "difficulty": "medium",
+      "template": "What is {PERCENT}% of {NUMBER}?",
+      "params": {
+        "PERCENT": {"type": "choice", "options": [10, 20, 25, 50, 75]},
+        "NUMBER": {"type": "choice", "options": [20, 40, 60, 80, 100, 120]}
+      },
+      "correctAnswer": "({PERCENT} / 100) * {NUMBER}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y5-NUM-011",
+      "topic": "Percentages - Word Problem",
+      "curriculum": "VCMNA170",
+      "difficulty": "hard",
+      "template": "A {ITEM} costs ${PRICE}. It is on sale for {DISCOUNT}% off. How much is the discount?",
+      "params": {
+        "ITEM": {"type": "choice", "options": ["shirt", "toy", "book", "game"]},
+        "PRICE": {"type": "choice", "options": [20, 40, 50, 80, 100]},
+        "DISCOUNT": {"type": "choice", "options": [10, 20, 25, 50]}
+      },
+      "correctAnswer": "({DISCOUNT} / 100) * {PRICE}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y5-NUM-012",
+      "topic": "Measurement - Conversion",
+      "curriculum": "VCMNA171",
+      "difficulty": "medium",
+      "template": "Convert {VALUE} {UNIT1} to {UNIT2}",
+      "params": {
+        "VALUE": {"type": "integer", "min": 1, "max": 10},
+        "UNIT1": {"type": "choice", "options": ["km", "m", "kg", "L"]},
+        "UNIT2": {"type": "relatedUnit", "from": "UNIT1"}
+      },
+      "correctAnswer": "convert({VALUE}, {UNIT1}, {UNIT2})",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y5-NUM-013",
+      "topic": "Area - Rectangle",
+      "curriculum": "VCMNA173",
+      "difficulty": "medium",
+      "template": "A rectangle has length {LENGTH} m and width {WIDTH} m. What is its area?",
+      "params": {
+        "LENGTH": {"type": "integer", "min": 4, "max": 12},
+        "WIDTH": {"type": "integer", "min": 2, "max": 10}
+      },
+      "visual": {
+        "type": "rectangle",
+        "length": "{LENGTH}",
+        "width": "{WIDTH}",
+        "showDimensions": true
+      },
+      "correctAnswer": "{LENGTH} * {WIDTH}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y5-NUM-014",
+      "topic": "Perimeter - Rectangle",
+      "curriculum": "VCMNA173",
+      "difficulty": "medium",
+      "template": "A rectangle has length {LENGTH} cm and width {WIDTH} cm. What is its perimeter?",
+      "params": {
+        "LENGTH": {"type": "integer", "min": 5, "max": 20},
+        "WIDTH": {"type": "integer", "min": 3, "max": 15, "constraint": "< LENGTH"}
+      },
+      "correctAnswer": "2 * ({LENGTH} + {WIDTH})",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y5-NUM-015",
+      "topic": "Volume - Rectangular Prism",
+      "curriculum": "VCMNA174",
+      "difficulty": "hard",
+      "template": "A box has length {L} cm, width {W} cm, and height {H} cm. What is its volume?",
+      "params": {
+        "L": {"type": "integer", "min": 3, "max": 8},
+        "W": {"type": "integer", "min": 2, "max": 6},
+        "H": {"type": "integer", "min": 2, "max": 5}
+      },
+      "correctAnswer": "{L} * {W} * {H}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y5-NUM-016",
+      "topic": "Angles - Types",
+      "curriculum": "VCMNA175",
+      "difficulty": "medium",
+      "template": "What type of angle is {ANGLE}°?",
+      "params": {
+        "ANGLE": {"type": "choice", "options": [30, 45, 60, 90, 120, 150, 180]}
+      },
+      "visual": {
+        "type": "angle",
+        "degrees": "{ANGLE}"
+      },
+      "correctAnswer": "classifyAngle({ANGLE})",
+      "answerType": "multipleChoice",
+      "distractors": ["acute", "right", "obtuse", "straight"].filter(a => a !== correct)
+    },
+    {
+      "id": "Y5-NUM-017",
+      "topic": "Angles - Measurement",
+      "curriculum": "VCMNA175",
+      "difficulty": "medium",
+      "template": "Estimate the size of this angle",
+      "params": {
+        "ANGLE": {"type": "integer", "min": 30, "max": 150, "step": 15}
+      },
+      "visual": {
+        "type": "angle",
+        "degrees": "{ANGLE}"
+      },
+      "correctAnswer": "{ANGLE}",
+      "answerType": "numeric",
+      "tolerance": 5
+    },
+    {
+      "id": "Y5-NUM-018",
+      "topic": "Data - Line Graph",
+      "curriculum": "VCMNA176",
+      "difficulty": "medium",
+      "template": "According to the graph, which month had the highest rainfall?",
+      "params": {
+        "DATA": {"type": "lineGraph", "points": 6}
+      },
+      "visual": {
+        "type": "lineGraph",
+        "data": "{DATA}",
+        "title": "Monthly Rainfall"
+      },
+      "correctAnswer": "maxDataPoint({DATA})",
+      "answerType": "multipleChoice",
+      "distractors": ["otherDataPoints({DATA}, 3)"]
+    },
+    {
+      "id": "Y5-NUM-019",
+      "topic": "Data - Table",
+      "curriculum": "VCMNA176",
+      "difficulty": "easy",
+      "template": "What was {NAME}'s score in {SUBJECT}?",
+      "params": {
+        "TABLE": {"type": "dataTable", "rows": 4, "cols": 3},
+        "NAME": {"type": "extractFromTable", "from": "TABLE"},
+        "SUBJECT": {"type": "extractFromTable", "from": "TABLE"}
+      },
+      "visual": {
+        "type": "table",
+        "data": "{TABLE}"
+      },
+      "correctAnswer": "tableValue({TABLE}, {NAME}, {SUBJECT})",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y5-NUM-020",
+      "topic": "Probability",
+      "curriculum": "VCMNA177",
+      "difficulty": "medium",
+      "template": "A bag has {RED} red balls and {BLUE} blue balls. What is the probability of picking a red ball?",
+      "params": {
+        "RED": {"type": "integer", "min": 1, "max": 5},
+        "BLUE": {"type": "integer", "min": 1, "max": 5}
+      },
+      "correctAnswer": "{RED}/({RED} + {BLUE})",
+      "answerType": "multipleChoice",
+      "distractors": ["probabilityDistractors({RED}, {BLUE}, 3)"]
+    },
+    {
+      "id": "Y5-NUM-021",
+      "topic": "Mixed Operations - Order",
+      "curriculum": "VCMNA167",
+      "difficulty": "hard",
+      "template": "{NUM1} + {NUM2} × {NUM3} = ?",
+      "params": {
+        "NUM1": {"type": "integer", "min": 5, "max": 20},
+        "NUM2": {"type": "integer", "min": 2, "max": 10},
+        "NUM3": {"type": "integer", "min": 2, "max": 10}
+      },
+      "correctAnswer": "{NUM1} + ({NUM2} * {NUM3})",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y5-NUM-022",
+      "topic": "Factors",
+      "curriculum": "VCMNA166",
+      "difficulty": "medium",
+      "template": "Which number is a factor of {NUMBER}?",
+      "params": {
+        "NUMBER": {"type": "choice", "options": [12, 18, 24, 30, 36, 48]}
+      },
+      "correctAnswer": "randomFactor({NUMBER})",
+      "answerType": "multipleChoice",
+      "distractors": ["nonFactors({NUMBER}, 3)"]
+    },
+    {
+      "id": "Y5-NUM-023",
+      "topic": "Multiples",
+      "curriculum": "VCMNA166",
+      "difficulty": "medium",
+      "template": "Which number is a multiple of {BASE}?",
+      "params": {
+        "BASE": {"type": "choice", "options": [3, 4, 5, 6, 7, 8]}
+      },
+      "correctAnswer": "randomMultiple({BASE})",
+      "answerType": "multipleChoice",
+      "distractors": ["nonMultiples({BASE}, 3)"]
+    },
+    {
+      "id": "Y5-NUM-024",
+      "topic": "Prime Numbers",
+      "curriculum": "VCMNA166",
+      "difficulty": "hard",
+      "template": "Which of these is a prime number?",
+      "params": {},
+      "correctAnswer": "randomPrime(2, 50)",
+      "answerType": "multipleChoice",
+      "distractors": ["compositesNear(correct, 3)"]
+    },
+    {
+      "id": "Y5-NUM-025",
+      "topic": "Decimal Comparison",
+      "curriculum": "VCMNA167",
+      "difficulty": "medium",
+      "template": "Which symbol makes this true? {DEC1} ___ {DEC2}",
+      "params": {
+        "DEC1": {"type": "decimal", "min": 0.1, "max": 9.9, "places": 1},
+        "DEC2": {"type": "decimal", "min": 0.1, "max": 9.9, "places": 1}
+      },
+      "correctAnswer": "compareSymbol({DEC1}, {DEC2})",
+      "answerType": "multipleChoice",
+      "distractors": ["<", ">", "="].filter(s => s !== correct)
+    },
+    {
+      "id": "Y5-NUM-026",
+      "topic": "Fraction to Decimal",
+      "curriculum": "VCMNA169",
+      "difficulty": "hard",
+      "template": "What is {NUM}/{DEN} as a decimal?",
+      "params": {
+        "NUM": {"type": "integer", "min": 1, "max": 4},
+        "DEN": {"type": "choice", "options": [2, 4, 5, 10]}
+      },
+      "correctAnswer": "{NUM} / {DEN}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y5-NUM-027",
+      "topic": "Percentage to Fraction",
+      "curriculum": "VCMNA170",
+      "difficulty": "hard",
+      "template": "What is {PERCENT}% as a fraction in simplest form?",
+      "params": {
+        "PERCENT": {"type": "choice", "options": [10, 20, 25, 50, 75]}
+      },
+      "correctAnswer": "simplifyFraction({PERCENT}, 100)",
+      "answerType": "multipleChoice",
+      "distractors": ["fractionDistractors({PERCENT}/100, 3)"]
+    },
+    {
+      "id": "Y5-NUM-028",
+      "topic": "Area - Composite Shape",
+      "curriculum": "VCMNA173",
+      "difficulty": "hard",
+      "template": "Find the total area (Rectangle 1: {L1} × {W1}, Rectangle 2: {L2} × {W2})",
+      "params": {
+        "L1": {"type": "integer", "min": 4, "max": 10},
+        "W1": {"type": "integer", "min": 2, "max": 6},
+        "L2": {"type": "integer", "min": 3, "max": 8},
+        "W2": {"type": "integer", "min": 2, "max": 5}
+      },
+      "visual": {
+        "type": "compositeShape",
+        "shapes": ["rectangle", "rectangle"]
+      },
+      "correctAnswer": "({L1} * {W1}) + ({L2} * {W2})",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y5-NUM-029",
+      "topic": "Time - 24 Hour Clock",
+      "curriculum": "VCMNA172",
+      "difficulty": "medium",
+      "template": "What is {TIME12} in 24-hour time?",
+      "params": {
+        "TIME12": {"type": "time12", "format": "h:mm AM/PM"}
+      },
+      "correctAnswer": "convert24Hour({TIME12})",
+      "answerType": "multipleChoice",
+      "distractors": ["time24Distractors({TIME12}, 3)"]
+    },
+    {
+      "id": "Y5-NUM-030",
+      "topic": "Elapsed Time",
+      "curriculum": "VCMNA172",
+      "difficulty": "hard",
+      "template": "A train leaves at {START} and arrives at {END}. How long is the journey in minutes?",
+      "params": {
+        "START": {"type": "time", "format": "hh:mm"},
+        "END": {"type": "time", "format": "hh:mm", "constraint": "> START && < START + 5 hours"}
+      },
+      "correctAnswer": "durationMinutes({START}, {END})",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y5-NUM-031",
+      "topic": "Ratio - Simple",
+      "curriculum": "VCMNA169",
+      "difficulty": "medium",
+      "template": "The ratio of boys to girls is {BOYS}:{GIRLS}. If there are {TOTAL_BOYS} boys, how many girls?",
+      "params": {
+        "BOYS": {"type": "integer", "min": 2, "max": 5},
+        "GIRLS": {"type": "integer", "min": 2, "max": 5},
+        "MULTIPLIER": {"type": "integer", "min": 2, "max": 6},
+        "TOTAL_BOYS": {"type": "computed", "formula": "{BOYS} * {MULTIPLIER}"}
+      },
+      "correctAnswer": "{GIRLS} * {MULTIPLIER}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y5-NUM-032",
+      "topic": "Mean Average",
+      "curriculum": "VCMNA176",
+      "difficulty": "hard",
+      "template": "Find the mean of: {NUM1}, {NUM2}, {NUM3}, {NUM4}",
+      "params": {
+        "NUM1": {"type": "integer", "min": 10, "max": 30},
+        "NUM2": {"type": "integer", "min": 10, "max": 30},
+        "NUM3": {"type": "integer", "min": 10, "max": 30},
+        "NUM4": {"type": "integer", "min": 10, "max": 30}
+      },
+      "correctAnswer": "({NUM1} + {NUM2} + {NUM3} + {NUM4}) / 4",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y5-NUM-033",
+      "topic": "Mode",
+      "curriculum": "VCMNA176",
+      "difficulty": "medium",
+      "template": "What is the mode of: {SET}",
+      "params": {
+        "SET": {"type": "numberSet", "withMode": true}
+      },
+      "correctAnswer": "findMode({SET})",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y5-NUM-034",
+      "topic": "Range",
+      "curriculum": "VCMNA176",
+      "difficulty": "medium",
+      "template": "What is the range of: {NUM1}, {NUM2}, {NUM3}, {NUM4}, {NUM5}",
+      "params": {
+        "NUM1": {"type": "integer", "min": 5, "max": 25},
+        "NUM2": {"type": "integer", "min": 5, "max": 25},
+        "NUM3": {"type": "integer", "min": 5, "max": 25},
+        "NUM4": {"type": "integer", "min": 5, "max": 25},
+        "NUM5": {"type": "integer", "min": 5, "max": 25}
+      },
+      "correctAnswer": "max([{NUM1}, {NUM2}, {NUM3}, {NUM4}, {NUM5}]) - min([{NUM1}, {NUM2}, {NUM3}, {NUM4}, {NUM5}])",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y5-NUM-035",
+      "topic": "Powers of 10",
+      "curriculum": "VCMNA166",
+      "difficulty": "medium",
+      "template": "{NUMBER} × 10 = ?",
+      "params": {
+        "NUMBER": {"type": "integer", "min": 10, "max": 999}
+      },
+      "correctAnswer": "{NUMBER} * 10",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y5-NUM-036",
+      "topic": "Division by 10",
+      "curriculum": "VCMNA167",
+      "difficulty": "medium",
+      "template": "{NUMBER} ÷ 10 = ?",
+      "params": {
+        "NUMBER": {"type": "integer", "min": 100, "max": 9900, "step": 10}
+      },
+      "correctAnswer": "{NUMBER} / 10",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y5-NUM-037",
+      "topic": "Negative Numbers",
+      "curriculum": "VCMNA166",
+      "difficulty": "medium",
+      "template": "What temperature is {CHANGE}°C warmer than {TEMP}°C?",
+      "params": {
+        "TEMP": {"type": "integer", "min": -10, "max": 5},
+        "CHANGE": {"type": "integer", "min": 3, "max": 15}
+      },
+      "correctAnswer": "{TEMP} + {CHANGE}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y5-NUM-038",
+      "topic": "Scale Reading",
+      "curriculum": "VCMNA171",
+      "difficulty": "medium",
+      "template": "What measurement is shown on this scale?",
+      "params": {
+        "VALUE": {"type": "decimal", "min": 0.5, "max": 5.0, "places": 1}
+      },
+      "visual": {
+        "type": "scale",
+        "reading": "{VALUE}",
+        "unit": "kg"
+      },
+      "correctAnswer": "{VALUE}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y5-NUM-039",
+      "topic": "Timetable Reading",
+      "curriculum": "VCMNA172",
+      "difficulty": "hard",
+      "template": "A bus leaves {STOP1} at {TIME1} and reaches {STOP2} at {TIME2}. How long does it take?",
+      "params": {
+        "STOP1": {"type": "busStop"},
+        "STOP2": {"type": "busStop"},
+        "TIME1": {"type": "time", "format": "hh:mm"},
+        "TIME2": {"type": "time", "format": "hh:mm", "constraint": "> TIME1"}
+      },
+      "correctAnswer": "durationMinutes({TIME1}, {TIME2})",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y5-NUM-040",
+      "topic": "Sequences - Arithmetic",
+      "curriculum": "VCMNA166",
+      "difficulty": "hard",
+      "template": "Find the next two numbers: {NUM1}, {NUM2}, {NUM3}, ___, ___",
+      "params": {
+        "NUM1": {"type": "integer", "min": 5, "max": 30},
+        "DIFF": {"type": "integer", "min": 3, "max": 10},
+        "NUM2": {"type": "computed", "formula": "{NUM1} + {DIFF}"},
+        "NUM3": {"type": "computed", "formula": "{NUM2} + {DIFF}"}
+      },
+      "correctAnswer": "[{NUM3} + {DIFF}, {NUM3} + {DIFF} * 2]",
+      "answerType": "multipleChoice",
+      "distractors": ["sequenceDistractors({NUM3}, {DIFF}, 3)"]
+    },
+    {
+      "id": "Y5-NUM-041",
+      "topic": "Division with Remainders",
+      "curriculum": "VCMNA167",
+      "difficulty": "medium",
+      "template": "{NUM1} ÷ {NUM2} = ? remainder ?",
+      "params": {
+        "NUM2": {"type": "integer", "min": 3, "max": 9},
+        "NUM1": {"type": "integer", "min": 20, "max": 99}
+      },
+      "correctAnswer": "divisionWithRemainder({NUM1}, {NUM2})",
+      "answerType": "multipleChoice",
+      "distractors": ["remainderDistractors({NUM1}, {NUM2}, 3)"]
+    },
+    {
+      "id": "Y5-NUM-042",
+      "topic": "Expanded Notation",
+      "curriculum": "VCMNA166",
+      "difficulty": "medium",
+      "template": "Write {NUMBER} in expanded form",
+      "params": {
+        "NUMBER": {"type": "integer", "min": 10000, "max": 99999}
+      },
+      "correctAnswer": "expandedForm({NUMBER})",
+      "answerType": "multipleChoice",
+      "distractors": ["expandedFormDistractors({NUMBER}, 3)"]
+    },
+    {
+      "id": "Y5-NUM-043",
+      "topic": "Coordinates - Quadrant 1",
+      "curriculum": "VCMNA175",
+      "difficulty": "medium",
+      "template": "What are the coordinates of point A?",
+      "params": {
+        "X": {"type": "integer", "min": 1, "max": 10},
+        "Y": {"type": "integer", "min": 1, "max": 10}
+      },
+      "visual": {
+        "type": "coordinateGrid",
+        "points": [{"label": "A", "x": "{X}", "y": "{Y}"}]
+      },
+      "correctAnswer": "({X}, {Y})",
+      "answerType": "multipleChoice",
+      "distractors": ["coordinateDistractors({X}, {Y}, 3)"]
+    },
+    {
+      "id": "Y5-NUM-044",
+      "topic": "Money - GST",
+      "curriculum": "VCMNA170",
+      "difficulty": "hard",
+      "template": "A book costs ${PRICE}. With 10% GST, what is the total price?",
+      "params": {
+        "PRICE": {"type": "decimal", "min": 10.00, "max": 50.00, "step": 5.00}
+      },
+      "correctAnswer": "{PRICE} * 1.10",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y5-NUM-045",
+      "topic": "Speed - Distance/Time",
+      "curriculum": "VCMNA172",
+      "difficulty": "hard",
+      "template": "A car travels {DISTANCE} km in {TIME} hours. What is its average speed?",
+      "params": {
+        "DISTANCE": {"type": "integer", "min": 100, "max": 400, "step": 50},
+        "TIME": {"type": "choice", "options": [2, 4, 5]}
+      },
+      "correctAnswer": "{DISTANCE} / {TIME}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y5-NUM-046",
+      "topic": "Metric Conversions - Multi-step",
+      "curriculum": "VCMNA171",
+      "difficulty": "hard",
+      "template": "{VALUE} km = ___ m",
+      "params": {
+        "VALUE": {"type": "decimal", "min": 0.5, "max": 5.0, "places": 1}
+      },
+      "correctAnswer": "{VALUE} * 1000",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y5-NUM-047",
+      "topic": "Circle - Circumference",
+      "curriculum": "VCMNA173",
+      "difficulty": "hard",
+      "template": "A circle has diameter {DIAMETER} cm. What is its circumference? (Use π ≈ 3.14)",
+      "params": {
+        "DIAMETER": {"type": "integer", "min": 4, "max": 12, "step": 2}
+      },
+      "correctAnswer": "{DIAMETER} * 3.14",
+      "answerType": "numeric",
+      "tolerance": 0.1
+    },
+    {
+      "id": "Y5-NUM-048",
+      "topic": "Estimation - Multiplication",
+      "curriculum": "VCMNA167",
+      "difficulty": "medium",
+      "template": "Estimate {NUM1} × {NUM2} by rounding to the nearest 10",
+      "params": {
+        "NUM1": {"type": "integer", "min": 35, "max": 95},
+        "NUM2": {"type": "integer", "min": 25, "max": 75}
+      },
+      "correctAnswer": "round({NUM1}, 10) * round({NUM2}, 10)",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y5-NUM-049",
+      "topic": "Square Numbers",
+      "curriculum": "VCMNA166",
+      "difficulty": "medium",
+      "template": "What is {NUMBER} squared?",
+      "params": {
+        "NUMBER": {"type": "integer", "min": 4, "max": 12}
+      },
+      "correctAnswer": "{NUMBER} * {NUMBER}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y5-NUM-050",
+      "topic": "Proportion",
+      "curriculum": "VCMNA169",
+      "difficulty": "hard",
+      "template": "If {NUM1} {ITEM} cost ${COST}, how much do {NUM2} {ITEM} cost?",
+      "params": {
+        "NUM1": {"type": "choice", "options": [2, 4, 5]},
+        "NUM2": {"type": "choice", "options": [6, 8, 10]},
+        "ITEM": {"type": "choice", "options": ["apples", "books", "pens"]},
+        "COST": {"type": "decimal", "min": 5.00, "max": 20.00, "step": 2.50}
+      },
+      "correctAnswer": "({COST} / {NUM1}) * {NUM2}",
+      "answerType": "numeric"
+    }
+  ],
+  "year7": [
+    {
+      "id": "Y7-NUM-001",
+      "topic": "Integers - Number Line",
+      "curriculum": "VCMNA183",
+      "difficulty": "easy",
+      "template": "What integer is shown by the arrow?",
+      "params": {
+        "VALUE": {"type": "integer", "min": -18, "max": 18}
+      },
+      "visual": {
+        "type": "numberLine",
+        "min": -20,
+        "max": 20,
+        "marked": "{VALUE}"
+      },
+      "correctAnswer": "{VALUE}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y7-NUM-002",
+      "topic": "Integers - Addition",
+      "curriculum": "VCMNA183",
+      "difficulty": "medium",
+      "template": "{INT1} + ({INT2}) = ?",
+      "params": {
+        "INT1": {"type": "integer", "min": -20, "max": 20},
+        "INT2": {"type": "integer", "min": -20, "max": 20}
+      },
+      "correctAnswer": "{INT1} + {INT2}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y7-NUM-003",
+      "topic": "Integers - Subtraction",
+      "curriculum": "VCMNA183",
+      "difficulty": "medium",
+      "template": "{INT1} - ({INT2}) = ?",
+      "params": {
+        "INT1": {"type": "integer", "min": -15, "max": 20},
+        "INT2": {"type": "integer", "min": -15, "max": 15}
+      },
+      "correctAnswer": "{INT1} - {INT2}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y7-NUM-004",
+      "topic": "Fractions - Multiplication",
+      "curriculum": "VCMNA184",
+      "difficulty": "hard",
+      "template": "{NUM1}/{DEN1} × {NUM2}/{DEN2} = ?",
+      "params": {
+        "NUM1": {"type": "integer", "min": 1, "max": 5},
+        "DEN1": {"type": "choice", "options": [2, 3, 4, 5]},
+        "NUM2": {"type": "integer", "min": 1, "max": 5},
+        "DEN2": {"type": "choice", "options": [2, 3, 4, 5]}
+      },
+      "correctAnswer": "simplifyFraction({NUM1} * {NUM2}, {DEN1} * {DEN2})",
+      "answerType": "multipleChoice",
+      "distractors": ["fractionDistractors(({NUM1} * {NUM2}) + '/' + ({DEN1} * {DEN2}), 3)"]
+    },
+    {
+      "id": "Y7-NUM-005",
+      "topic": "Fractions - Division",
+      "curriculum": "VCMNA184",
+      "difficulty": "hard",
+      "template": "{NUM1}/{DEN1} ÷ {NUM2}/{DEN2} = ?",
+      "params": {
+        "NUM1": {"type": "integer", "min": 1, "max": 4},
+        "DEN1": {"type": "choice", "options": [2, 3, 4]},
+        "NUM2": {"type": "integer", "min": 1, "max": 3},
+        "DEN2": {"type": "choice", "options": [2, 3, 4]}
+      },
+      "correctAnswer": "simplifyFraction({NUM1} * {DEN2}, {DEN1} * {NUM2})",
+      "answerType": "multipleChoice",
+      "distractors": ["fractionDistractors(({NUM1} * {DEN2}) + '/' + ({DEN1} * {NUM2}), 3)"]
+    },
+    {
+      "id": "Y7-NUM-006",
+      "topic": "Decimals - Division",
+      "curriculum": "VCMNA184",
+      "difficulty": "medium",
+      "template": "{DEC} ÷ {DIV} = ?",
+      "params": {
+        "DEC": {"type": "decimal", "min": 10.0, "max": 99.9, "places": 1},
+        "DIV": {"type": "choice", "options": [2, 5, 10]}
+      },
+      "correctAnswer": "{DEC} / {DIV}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y7-NUM-007",
+      "topic": "Order of Operations",
+      "curriculum": "VCMNA184",
+      "difficulty": "hard",
+      "template": "{NUM1} + {NUM2} × {NUM3} = ?",
+      "params": {
+        "NUM1": {"type": "integer", "min": 5, "max": 20},
+        "NUM2": {"type": "integer", "min": 2, "max": 10},
+        "NUM3": {"type": "integer", "min": 2, "max": 10}
+      },
+      "correctAnswer": "{NUM1} + ({NUM2} * {NUM3})",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y7-NUM-008",
+      "topic": "Calculator Section Starts",
+      "curriculum": "VCMNA184",
+      "difficulty": "medium",
+      "template": "({NUM1} × {NUM2}) + {NUM3} = ?",
+      "params": {
+        "NUM1": {"type": "integer", "min": 15, "max": 45},
+        "NUM2": {"type": "integer", "min": 12, "max": 35},
+        "NUM3": {"type": "integer", "min": 100, "max": 500}
+      },
+      "correctAnswer": "({NUM1} * {NUM2}) + {NUM3}",
+      "answerType": "numeric",
+      "note": "Calculator allowed from this question"
+    },
+    {
+      "id": "Y7-NUM-009",
+      "topic": "Percentages - Calculation",
+      "curriculum": "VCMNA185",
+      "difficulty": "medium",
+      "template": "Find {PERCENT}% of {NUMBER}",
+      "params": {
+        "PERCENT": {"type": "choice", "options": [15, 30, 35, 60, 75, 85]},
+        "NUMBER": {"type": "choice", "options": [40, 60, 80, 120, 160, 200]}
+      },
+      "correctAnswer": "({PERCENT} / 100) * {NUMBER}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y7-NUM-010",
+      "topic": "Percentages - Increase",
+      "curriculum": "VCMNA185",
+      "difficulty": "hard",
+      "template": "A jacket costs ${PRICE}. It increases by {PERCENT}%. What is the new price?",
+      "params": {
+        "PRICE": {"type": "choice", "options": [50, 80, 100, 120, 150]},
+        "PERCENT": {"type": "choice", "options": [10, 15, 20, 25]}
+      },
+      "correctAnswer": "{PRICE} + ({PRICE} * {PERCENT} / 100)",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y7-NUM-011",
+      "topic": "Percentages - Decrease",
+      "curriculum": "VCMNA185",
+      "difficulty": "hard",
+      "template": "A phone costs ${PRICE}. It's discounted by {PERCENT}%. What is the sale price?",
+      "params": {
+        "PRICE": {"type": "choice", "options": [400, 600, 800, 1000]},
+        "PERCENT": {"type": "choice", "options": [15, 20, 25, 30]}
+      },
+      "correctAnswer": "{PRICE} - ({PRICE} * {PERCENT} / 100)",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y7-NUM-012",
+      "topic": "Ratios - Simplification",
+      "curriculum": "VCMNA186",
+      "difficulty": "medium",
+      "template": "Simplify the ratio {NUM1}:{NUM2}",
+      "params": {
+        "GCD": {"type": "choice", "options": [2, 3, 4, 5]},
+        "NUM1": {"type": "computed", "formula": "{GCD} * randomInt(2, 8)"},
+        "NUM2": {"type": "computed", "formula": "{GCD} * randomInt(2, 8)"}
+      },
+      "correctAnswer": "simplifyRatio({NUM1}, {NUM2})",
+      "answerType": "multipleChoice",
+      "distractors": ["ratioDistractors({NUM1}, {NUM2}, 3)"]
+    },
+    {
+      "id": "Y7-NUM-013",
+      "topic": "Ratios - Word Problem",
+      "curriculum": "VCMNA186",
+      "difficulty": "hard",
+      "template": "Boys to girls ratio is {BOYS}:{GIRLS}. If there are {TOTAL_BOYS} boys, how many girls?",
+      "params": {
+        "BOYS": {"type": "integer", "min": 2, "max": 5},
+        "GIRLS": {"type": "integer", "min": 2, "max": 5},
+        "MULTIPLIER": {"type": "integer", "min": 3, "max": 7},
+        "TOTAL_BOYS": {"type": "computed", "formula": "{BOYS} * {MULTIPLIER}"}
+      },
+      "correctAnswer": "{GIRLS} * {MULTIPLIER}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y7-NUM-014",
+      "topic": "Algebra - Simplifying",
+      "curriculum": "VCMNA187",
+      "difficulty": "medium",
+      "template": "Simplify: {COEF1}x + {COEF2}x",
+      "params": {
+        "COEF1": {"type": "integer", "min": 2, "max": 9},
+        "COEF2": {"type": "integer", "min": 2, "max": 9}
+      },
+      "correctAnswer": "({COEF1} + {COEF2})x",
+      "answerType": "multipleChoice",
+      "distractors": ["algebraDistractors({COEF1} + {COEF2}, 3)"]
+    },
+    {
+      "id": "Y7-NUM-015",
+      "topic": "Algebra - Substitution",
+      "curriculum": "VCMNA187",
+      "difficulty": "medium",
+      "template": "If x = {X_VALUE}, what is {COEF}x + {CONSTANT}?",
+      "params": {
+        "X_VALUE": {"type": "integer", "min": 2, "max": 10},
+        "COEF": {"type": "integer", "min": 2, "max": 8},
+        "CONSTANT": {"type": "integer", "min": 3, "max": 15}
+      },
+      "correctAnswer": "{COEF} * {X_VALUE} + {CONSTANT}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y7-NUM-016",
+      "topic": "Algebra - Solving Equations",
+      "curriculum": "VCMNA188",
+      "difficulty": "medium",
+      "template": "Solve for x: {COEF}x = {RESULT}",
+      "params": {
+        "COEF": {"type": "integer", "min": 2, "max": 9},
+        "X": {"type": "integer", "min": 2, "max": 12},
+        "RESULT": {"type": "computed", "formula": "{COEF} * {X}"}
+      },
+      "correctAnswer": "{X}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y7-NUM-017",
+      "topic": "Algebra - Two-step Equations",
+      "curriculum": "VCMNA188",
+      "difficulty": "hard",
+      "template": "Solve for x: {COEF}x + {CONST} = {RESULT}",
+      "params": {
+        "COEF": {"type": "integer", "min": 2, "max": 7},
+        "CONST": {"type": "integer", "min": 3, "max": 12},
+        "X": {"type": "integer", "min": 2, "max": 10},
+        "RESULT": {"type": "computed", "formula": "({COEF} * {X}) + {CONST}"}
+      },
+      "correctAnswer": "{X}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y7-NUM-018",
+      "topic": "Coordinates - All Quadrants",
+      "curriculum": "VCMNA189",
+      "difficulty": "medium",
+      "template": "What are the coordinates of point A?",
+      "params": {
+        "X": {"type": "integer", "min": -8, "max": 8},
+        "Y": {"type": "integer", "min": -8, "max": 8}
+      },
+      "visual": {
+        "type": "cartesianPlane",
+        "points": [{"label": "A", "x": "{X}", "y": "{Y}"}]
+      },
+      "correctAnswer": "({X}, {Y})",
+      "answerType": "multipleChoice",
+      "distractors": ["coordinateDistractors({X}, {Y}, 3)"]
+    },
+    {
+      "id": "Y7-NUM-019",
+      "topic": "Coordinates - Distance",
+      "curriculum": "VCMNA189",
+      "difficulty": "medium",
+      "template": "What is the distance between ({X1}, {Y}) and ({X2}, {Y})?",
+      "params": {
+        "X1": {"type": "integer", "min": -5, "max": 5},
+        "X2": {"type": "integer", "min": -5, "max": 5},
+        "Y": {"type": "integer", "min": -5, "max": 5}
+      },
+      "correctAnswer": "abs({X2} - {X1})",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y7-NUM-020",
+      "topic": "Area - Triangle",
+      "curriculum": "VCMNA190",
+      "difficulty": "medium",
+      "template": "A triangle has base {BASE} cm and height {HEIGHT} cm. What is its area?",
+      "params": {
+        "BASE": {"type": "integer", "min": 4, "max": 16},
+        "HEIGHT": {"type": "integer", "min": 4, "max": 12}
+      },
+      "visual": {
+        "type": "triangle",
+        "base": "{BASE}",
+        "height": "{HEIGHT}",
+        "showDimensions": true
+      },
+      "correctAnswer": "({BASE} * {HEIGHT}) / 2",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y7-NUM-021",
+      "topic": "Area - Composite Shapes",
+      "curriculum": "VCMNA190",
+      "difficulty": "hard",
+      "template": "Find total area (Rectangle: {L} × {W}, Triangle: base {B}, height {H})",
+      "params": {
+        "L": {"type": "integer", "min": 6, "max": 12},
+        "W": {"type": "integer", "min": 4, "max": 8},
+        "B": {"type": "integer", "min": 4, "max": 10},
+        "H": {"type": "integer", "min": 3, "max": 8}
+      },
+      "correctAnswer": "({L} * {W}) + (({B} * {H}) / 2)",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y7-NUM-022",
+      "topic": "Circle - Area",
+      "curriculum": "VCMNA190",
+      "difficulty": "hard",
+      "template": "A circle has radius {RADIUS} cm. Find its area (Use π ≈ 3.14)",
+      "params": {
+        "RADIUS": {"type": "integer", "min": 3, "max": 10}
+      },
+      "correctAnswer": "3.14 * {RADIUS} * {RADIUS}",
+      "answerType": "numeric",
+      "tolerance": 0.5
+    },
+    {
+      "id": "Y7-NUM-023",
+      "topic": "Statistics - Mean",
+      "curriculum": "VCMNA191",
+      "difficulty": "medium",
+      "template": "Find the mean: {NUM1}, {NUM2}, {NUM3}, {NUM4}, {NUM5}",
+      "params": {
+        "NUM1": {"type": "integer", "min": 10, "max": 30},
+        "NUM2": {"type": "integer", "min": 10, "max": 30},
+        "NUM3": {"type": "integer", "min": 10, "max": 30},
+        "NUM4": {"type": "integer", "min": 10, "max": 30},
+        "NUM5": {"type": "integer", "min": 10, "max": 30}
+      },
+      "correctAnswer": "({NUM1} + {NUM2} + {NUM3} + {NUM4} + {NUM5}) / 5",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y7-NUM-024",
+      "topic": "Statistics - Median",
+      "curriculum": "VCMNA191",
+      "difficulty": "medium",
+      "template": "Find the median: {NUM1}, {NUM2}, {NUM3}, {NUM4}, {NUM5}",
+      "params": {
+        "NUM1": {"type": "integer", "min": 5, "max": 25},
+        "NUM2": {"type": "integer", "min": 5, "max": 25},
+        "NUM3": {"type": "integer", "min": 5, "max": 25},
+        "NUM4": {"type": "integer", "min": 5, "max": 25},
+        "NUM5": {"type": "integer", "min": 5, "max": 25}
+      },
+      "correctAnswer": "median([{NUM1}, {NUM2}, {NUM3}, {NUM4}, {NUM5}])",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y7-NUM-025",
+      "topic": "Statistics - Mode",
+      "curriculum": "VCMNA191",
+      "difficulty": "medium",
+      "template": "Find the mode: {SET}",
+      "params": {
+        "SET": {"type": "numberSet", "withMode": true, "length": 7}
+      },
+      "correctAnswer": "findMode({SET})",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y7-NUM-026",
+      "topic": "Probability - Fractions",
+      "curriculum": "VCMNA192",
+      "difficulty": "medium",
+      "template": "A coin is flipped twice. What is the probability of two heads?",
+      "params": {},
+      "correctAnswer": "1/4",
+      "answerType": "multipleChoice",
+      "distractors": ["1/2", "1/3", "2/3"]
+    },
+    {
+      "id": "Y7-NUM-027",
+      "topic": "Probability - Experiments",
+      "curriculum": "VCMNA192",
+      "difficulty": "hard",
+      "template": "A bag has {R} red, {B} blue, {G} green balls. Probability of picking red?",
+      "params": {
+        "R": {"type": "integer", "min": 2, "max": 5},
+        "B": {"type": "integer", "min": 2, "max": 5},
+        "G": {"type": "integer", "min": 2, "max": 5}
+      },
+      "correctAnswer": "{R}/({R} + {B} + {G})",
+      "answerType": "multipleChoice",
+      "distractors": ["probabilityDistractors({R}, {B}, {G}, 3)"]
+    },
+    {
+      "id": "Y7-NUM-028",
+      "topic": "Angles - Parallel Lines",
+      "curriculum": "VCMNA189",
+      "difficulty": "hard",
+      "template": "If angle a = {ANGLE}°, what is the corresponding angle?",
+      "params": {
+        "ANGLE": {"type": "integer", "min": 30, "max": 150, "step": 10}
+      },
+      "visual": {
+        "type": "parallelLines",
+        "angle": "{ANGLE}"
+      },
+      "correctAnswer": "{ANGLE}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y7-NUM-029",
+      "topic": "Angles - Sum in Triangle",
+      "curriculum": "VCMNA189",
+      "difficulty": "medium",
+      "template": "Two angles in a triangle are {ANGLE1}° and {ANGLE2}°. Find the third angle",
+      "params": {
+        "ANGLE1": {"type": "integer", "min": 30, "max": 80},
+        "ANGLE2": {"type": "integer", "min": 30, "max": 80, "constraint": "ANGLE1 + ANGLE2 < 150"}
+      },
+      "correctAnswer": "180 - {ANGLE1} - {ANGLE2}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y7-NUM-030",
+      "topic": "Scientific Notation",
+      "curriculum": "VCMNA183",
+      "difficulty": "hard",
+      "template": "Write {NUMBER} in scientific notation",
+      "params": {
+        "NUMBER": {"type": "integer", "min": 1000, "max": 999999}
+      },
+      "correctAnswer": "scientificNotation({NUMBER})",
+      "answerType": "multipleChoice",
+      "distractors": ["scientificDistractors({NUMBER}, 3)"]
+    },
+    {
+      "id": "Y7-NUM-031",
+      "topic": "Index Laws - Multiplication",
+      "curriculum": "VCMNA187",
+      "difficulty": "hard",
+      "template": "{BASE}^{EXP1} × {BASE}^{EXP2} = ?",
+      "params": {
+        "BASE": {"type": "choice", "options": [2, 3, 5]},
+        "EXP1": {"type": "integer", "min": 2, "max": 5},
+        "EXP2": {"type": "integer", "min": 2, "max": 5}
+      },
+      "correctAnswer": "{BASE}^({EXP1} + {EXP2})",
+      "answerType": "multipleChoice",
+      "distractors": ["indexDistractors({BASE}, {EXP1}, {EXP2}, 3)"]
+    },
+    {
+      "id": "Y7-NUM-032",
+      "topic": "Surds - Simplification",
+      "curriculum": "VCMNA184",
+      "difficulty": "hard",
+      "template": "Simplify √{NUMBER}",
+      "params": {
+        "NUMBER": {"type": "choice", "options": [8, 12, 18, 20, 27, 32, 45, 50]}
+      },
+      "correctAnswer": "simplifySurd({NUMBER})",
+      "answerType": "multipleChoice",
+      "distractors": ["surdDistractors({NUMBER}, 3)"]
+    },
+    {
+      "id": "Y7-NUM-033",
+      "topic": "Linear Patterns",
+      "curriculum": "VCMNA187",
+      "difficulty": "hard",
+      "template": "If pattern n = {COEF}n + {CONST}, what is the 10th term?",
+      "params": {
+        "COEF": {"type": "integer", "min": 2, "max": 7},
+        "CONST": {"type": "integer", "min": 1, "max": 10}
+      },
+      "correctAnswer": "{COEF} * 10 + {CONST}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y7-NUM-034",
+      "topic": "Pythagoras - Finding Hypotenuse",
+      "curriculum": "VCMNA189",
+      "difficulty": "hard",
+      "template": "A right triangle has sides {SIDE1} cm and {SIDE2} cm. Find the hypotenuse",
+      "params": {
+        "SIDE1": {"type": "choice", "options": [3, 5, 6, 8]},
+        "SIDE2": {"type": "choice", "options": [4, 12, 8, 15]}
+      },
+      "correctAnswer": "sqrt({SIDE1}^2 + {SIDE2}^2)",
+      "answerType": "numeric",
+      "tolerance": 0.1
+    },
+    {
+      "id": "Y7-NUM-035",
+      "topic": "Scale Factor",
+      "curriculum": "VCMNA190",
+      "difficulty": "medium",
+      "template": "A {SHAPE} is enlarged by scale factor {SCALE}. Original length {ORIG} cm. New length?",
+      "params": {
+        "SHAPE": {"type": "choice", "options": ["rectangle", "triangle", "square"]},
+        "SCALE": {"type": "choice", "options": [2, 3, 4, 5]},
+        "ORIG": {"type": "integer", "min": 3, "max": 12}
+      },
+      "correctAnswer": "{ORIG} * {SCALE}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y7-NUM-036",
+      "topic": "Compound Interest",
+      "curriculum": "VCMNA185",
+      "difficulty": "hard",
+      "template": "${PRINCIPAL} invested at {RATE}% for 2 years. Final amount?",
+      "params": {
+        "PRINCIPAL": {"type": "choice", "options": [1000, 2000, 5000]},
+        "RATE": {"type": "choice", "options": [5, 10]}
+      },
+      "correctAnswer": "{PRINCIPAL} * (1 + {RATE}/100)^2",
+      "answerType": "numeric",
+      "tolerance": 1
+    },
+    {
+      "id": "Y7-NUM-037",
+      "topic": "Lowest Common Multiple",
+      "curriculum": "VCMNA183",
+      "difficulty": "medium",
+      "template": "Find the LCM of {NUM1} and {NUM2}",
+      "params": {
+        "NUM1": {"type": "choice", "options": [4, 6, 8, 12]},
+        "NUM2": {"type": "choice", "options": [6, 9, 10, 15]}
+      },
+      "correctAnswer": "lcm({NUM1}, {NUM2})",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y7-NUM-038",
+      "topic": "Highest Common Factor",
+      "curriculum": "VCMNA183",
+      "difficulty": "medium",
+      "template": "Find the HCF of {NUM1} and {NUM2}",
+      "params": {
+        "NUM1": {"type": "choice", "options": [12, 18, 24, 30, 36]},
+        "NUM2": {"type": "choice", "options": [16, 20, 28, 32, 40]}
+      },
+      "correctAnswer": "hcf({NUM1}, {NUM2})",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y7-NUM-039",
+      "topic": "Box Plot Reading",
+      "curriculum": "VCMNA191",
+      "difficulty": "hard",
+      "template": "From this box plot, what is the median?",
+      "params": {
+        "MIN": {"type": "integer", "min": 10, "max": 20},
+        "Q1": {"type": "integer", "min": 25, "max": 35},
+        "MEDIAN": {"type": "integer", "min": 40, "max": 60},
+        "Q3": {"type": "integer", "min": 65, "max": 75},
+        "MAX": {"type": "integer", "min": 80, "max": 95}
+      },
+      "visual": {
+        "type": "boxPlot",
+        "min": "{MIN}",
+        "q1": "{Q1}",
+        "median": "{MEDIAN}",
+        "q3": "{Q3}",
+        "max": "{MAX}"
+      },
+      "correctAnswer": "{MEDIAN}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y7-NUM-040",
+      "topic": "Interquartile Range",
+      "curriculum": "VCMNA191",
+      "difficulty": "hard",
+      "template": "Q1 = {Q1}, Q3 = {Q3}. Find the interquartile range",
+      "params": {
+        "Q1": {"type": "integer", "min": 20, "max": 40},
+        "Q3": {"type": "integer", "min": 60, "max": 85}
+      },
+      "correctAnswer": "{Q3} - {Q1}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y7-NUM-041",
+      "topic": "Direct Proportion",
+      "curriculum": "VCMNA186",
+      "difficulty": "hard",
+      "template": "If y ∝ x and y = {Y1} when x = {X1}, find y when x = {X2}",
+      "params": {
+        "X1": {"type": "choice", "options": [2, 4, 5]},
+        "Y1": {"type": "choice", "options": [6, 12, 15, 20]},
+        "X2": {"type": "choice", "options": [6, 8, 10]}
+      },
+      "correctAnswer": "({Y1} / {X1}) * {X2}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y7-NUM-042",
+      "topic": "Inverse Proportion",
+      "curriculum": "VCMNA186",
+      "difficulty": "hard",
+      "template": "{WORKERS} workers complete a job in {DAYS} days. How long for {NEW_WORKERS} workers?",
+      "params": {
+        "WORKERS": {"type": "choice", "options": [4, 6, 8]},
+        "DAYS": {"type": "choice", "options": [6, 8, 12]},
+        "NEW_WORKERS": {"type": "choice", "options": [2, 3, 12]}
+      },
+      "correctAnswer": "({WORKERS} * {DAYS}) / {NEW_WORKERS}",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y7-NUM-043",
+      "topic": "Gradient of Line",
+      "curriculum": "VCMNA188",
+      "difficulty": "hard",
+      "template": "Find the gradient between ({X1}, {Y1}) and ({X2}, {Y2})",
+      "params": {
+        "X1": {"type": "integer", "min": 1, "max": 5},
+        "Y1": {"type": "integer", "min": 2, "max": 10},
+        "X2": {"type": "integer", "min": 6, "max": 10},
+        "Y2": {"type": "integer", "min": 12, "max": 20}
+      },
+      "correctAnswer": "({Y2} - {Y1}) / ({X2} - {X1})",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y7-NUM-044",
+      "topic": "Inequalities",
+      "curriculum": "VCMNA188",
+      "difficulty": "hard",
+      "template": "Solve: {COEF}x > {VALUE}",
+      "params": {
+        "COEF": {"type": "choice", "options": [2, 3, 4, 5]},
+        "VALUE": {"type": "integer", "min": 10, "max": 40}
+      },
+      "correctAnswer": "x > {VALUE}/{COEF}",
+      "answerType": "multipleChoice",
+      "distractors": ["inequalityDistractors({VALUE}, {COEF}, 3)"]
+    },
+    {
+      "id": "Y7-NUM-045",
+      "topic": "Stem-and-Leaf Plot",
+      "curriculum": "VCMNA191",
+      "difficulty": "medium",
+      "template": "How many data values are shown in this stem-and-leaf plot?",
+      "params": {
+        "DATA": {"type": "stemLeafData"}
+      },
+      "visual": {
+        "type": "stemLeaf",
+        "data": "{DATA}"
+      },
+      "correctAnswer": "countValues({DATA})",
+      "answerType": "numeric"
+    },
+    {
+      "id": "Y7-NUM-046",
+      "topic": "Expanding Brackets",
+      "curriculum": "VCMNA187",
+      "difficulty": "hard",
+      "template": "Expand: {COEF}({VAR} + {CONST})",
+      "params": {
+        "COEF": {"type": "integer", "min": 2, "max": 7},
+        "VAR": {"type": "letter"},
+        "CONST": {"type": "integer", "min": 2, "max": 10}
+      },
+      "correctAnswer": "{COEF}{VAR} + {COEF}*{CONST}",
+      "answerType": "multipleChoice",
+      "distractors": ["expansionDistractors({COEF}, {CONST}, 3)"]
+    },
+    {
+      "id": "Y7-NUM-047",
+      "topic": "Factorising",
+      "curriculum": "VCMNA187",
+      "difficulty": "hard",
+      "template": "Factorise: {COEF1}x + {COEF2}",
+      "params": {
+        "HCF": {"type": "choice", "options": [2, 3, 4, 5]},
+        "COEF1": {"type": "computed", "formula": "{HCF} * randomInt(2, 6)"},
+        "COEF2": {"type": "computed", "formula": "{HCF} * randomInt(2, 8)"}
+      },
+      "correctAnswer": "{HCF}({COEF1}/{HCF}x + {COEF2}/{HCF})",
+      "answerType": "multipleChoice",
+      "distractors": ["factorisationDistractors({COEF1}, {COEF2}, 3)"]
+    },
+    {
+      "id": "Y7-NUM-048",
+      "topic": "Reflections",
+      "curriculum": "VCMNA189",
+      "difficulty": "medium",
+      "template": "Point ({X}, {Y}) is reflected in the x-axis. What are the new coordinates?",
+      "params": {
+        "X": {"type": "integer", "min": -6, "max": 6},
+        "Y": {"type": "integer", "min": 1, "max": 8}
+      },
+      "correctAnswer": "({X}, -{Y})",
+      "answerType": "multipleChoice",
+      "distractors": ["reflectionDistractors({X}, {Y}, 3)"]
+    }
+  ]
+}
