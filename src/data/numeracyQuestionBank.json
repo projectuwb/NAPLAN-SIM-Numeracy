@@ -423,7 +423,7 @@
       },
       "correctAnswer": "compareSymbol({NUM1}, {NUM2})",
       "answerType": "multipleChoice",
-      "distractors": ["<", ">", "="].filter(s => s !== correct)
+      "distractors": ["<", ">", "="]
     },
     {
       "id": "Y3-NUM-028",
@@ -518,7 +518,7 @@
       },
       "correctAnswer": "evenOdd({NUMBER})",
       "answerType": "multipleChoice",
-      "distractors": ["even", "odd"].filter(a => a !== correct)
+      "distractors": ["even", "odd"]
     },
     {
       "id": "Y3-NUM-035",
@@ -965,7 +965,7 @@
       },
       "correctAnswer": "classifyAngle({ANGLE})",
       "answerType": "multipleChoice",
-      "distractors": ["acute", "right", "obtuse", "straight"].filter(a => a !== correct)
+      "distractors": ["acute", "right", "obtuse", "straight"]
     },
     {
       "id": "Y5-NUM-017",
@@ -1097,7 +1097,7 @@
       },
       "correctAnswer": "compareSymbol({DEC1}, {DEC2})",
       "answerType": "multipleChoice",
-      "distractors": ["<", ">", "="].filter(s => s !== correct)
+      "distractors": ["<", ">", "="]
     },
     {
       "id": "Y5-NUM-026",
