@@ -1,0 +1,58 @@
+name: Auto-merge Claude branches
+
+on:
+  push:
+    branches:
+      - 'claude/**'
+
+jobs:
+  auto-merge-to-main:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check if branch starts with claude/
+        id: check_branch
+        run: |
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+          echo "branch=$BRANCH_NAME" >> $GITHUB_OUTPUT
+          if [[ $BRANCH_NAME == claude/* ]]; then
+            echo "is_claude_branch=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_claude_branch=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Pull Request
+        if: steps.check_branch.outputs.is_claude_branch == 'true'
+        id: create_pr
+        uses: repo-sync/pull-request@v2
+        with:
+          source_branch: ${{ steps.check_branch.outputs.branch }}
+          destination_branch: main
+          pr_title: "Auto-merge: ${{ steps.check_branch.outputs.branch }}"
+          pr_body: |
+            🤖 **Automatic PR from Claude Code**
+
+            This PR was automatically created from branch `${{ steps.check_branch.outputs.branch }}`.
+
+            Changes will be automatically merged to main.
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Auto-merge PR
+        if: steps.check_branch.outputs.is_claude_branch == 'true' && steps.create_pr.outputs.pr_number
+        uses: pascalgn/automerge-action@v0.16.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_LABELS: ""
+          MERGE_METHOD: squash
+          MERGE_COMMIT_MESSAGE: "pull-request-title"
+          MERGE_FORKS: false
+          MERGE_RETRIES: 6
+          MERGE_RETRY_SLEEP: 10000
