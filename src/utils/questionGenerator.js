@@ -433,18 +433,35 @@ function wrongPlaceValue(number, digit, count) {
 // ============= EXPRESSION EVALUATOR (FIXED) =============
 function evaluateExpression(expr, params = {}) {
   try {
-    let evalExpr = expr;
-    for (const [key, value] of Object.entries(params)) {
-      evalExpr = evalExpr.replace(new RegExp(`\\{${key}\\}`, 'g'), value);
+    if (!expr || typeof expr !== 'string') {
+      console.error('Invalid expression:', expr);
+      return null;
     }
 
+    let evalExpr = expr;
+    
+    // Replace parameter placeholders - check for null/undefined
+    for (const [key, value] of Object.entries(params)) {
+      if (value !== null && value !== undefined) {
+        evalExpr = evalExpr.replace(new RegExp(`\\{${key}\\}`, 'g'), value);
+      }
+    }
+
+    // Replace mathematical operators
     evalExpr = evalExpr.replace(/×/g, '*').replace(/÷/g, '/');
     evalExpr = evalExpr.replace(/[{}]/g, '');
+
+    // Check if there are still unreplaced placeholders
+    if (evalExpr.includes('{') || evalExpr.includes('}')) {
+      console.warn('Unreplaced placeholders in expression:', evalExpr);
+      return null;
+    }
 
     // CRITICAL FIX: Make helper functions available in evaluation
     const helperFunctions = { 
       randomInt, randomChoice, randomDecimal, Math,
-      formatTime, addMinutes, roundToNearest
+      formatTime, addMinutes, roundToNearest,
+      abs: Math.abs, sqrt: Math.sqrt, max: Math.max, min: Math.min
     };
     
     const functionNames = Object.keys(helperFunctions);
@@ -452,7 +469,16 @@ function evaluateExpression(expr, params = {}) {
     
     const result = Function(...functionNames, `"use strict"; return (${evalExpr});`)(...functionValues);
     
-    return Math.round(result * 1000) / 1000;
+    // Check if result is valid
+    if (typeof result === 'number') {
+      if (isNaN(result) || !isFinite(result)) {
+        console.warn('Expression resulted in NaN or Infinity:', evalExpr);
+        return null;
+      }
+      return Math.round(result * 1000) / 1000;
+    }
+    
+    return result;
   } catch (e) {
     console.error('Expression evaluation error:', e, 'Expression:', expr);
     return null;
@@ -467,32 +493,40 @@ function generateParamValue(config, allParams = {}) {
         return randomEvenInt(config.min, config.max);
       }
 
-      let value;
-      let attempts = 0;
-      do {
-        value = randomInt(config.min, config.max);
+      // Simple case: no constraint
+      if (!config.constraint) {
+        return randomInt(config.min, config.max);
+      }
 
-        if (!config.constraint) break;
+      // Constraint exists - try to satisfy it
+      let value;
+      const maxAttempts = 50; // Reduced from 100
+      
+      for (let attempts = 0; attempts < maxAttempts; attempts++) {
+        value = randomInt(config.min, config.max);
 
         try {
           let constraint = config.constraint;
+          // Replace param references with actual values
           for (const [key, val] of Object.entries(allParams)) {
-            constraint = constraint.replace(new RegExp(key, 'g'), val);
+            if (val !== null && val !== undefined) {
+              constraint = constraint.replace(new RegExp(key, 'g'), val);
+            }
           }
+          
           const constraintMet = Function('value', `"use strict"; return ${constraint};`)(value);
-          if (constraintMet) break;
+          if (constraintMet) {
+            return value;
+          }
         } catch (e) {
+          // Constraint failed - just return the value
           console.warn('Constraint evaluation error:', e);
-          break;
+          return value;
         }
-
-        attempts++;
-        if (attempts > 100) {
-          console.warn('Could not satisfy constraint, using unconstrained value');
-          break;
-        }
-      } while (true);
-
+      }
+      
+      // Failed to satisfy constraint after maxAttempts
+      console.warn(`Could not satisfy constraint after ${maxAttempts} attempts, using last value`);
       return value;
     }
 
@@ -531,8 +565,15 @@ function generateParamValue(config, allParams = {}) {
     case 'computed':
       if (config.formula) {
         let formula = config.formula;
+        
+        // Replace params with values - check for null/undefined
         for (const [key, value] of Object.entries(allParams)) {
-          formula = formula.replace(new RegExp(`\\{${key}\\}`, 'g'), value);
+          if (value !== null && value !== undefined) {
+            formula = formula.replace(new RegExp(`\\{${key}\\}`, 'g'), value);
+          } else {
+            console.warn(`Param ${key} is null/undefined in formula:`, formula);
+            return 0; // Early return instead of trying to evaluate bad formula
+          }
         }
 
         // Handle special functions
@@ -541,7 +582,9 @@ function generateParamValue(config, allParams = {}) {
           if (match) {
             const hour = parseInt(match[1]);
             const minute = parseInt(match[2]);
-            return formatTime(hour, minute);
+            if (!isNaN(hour) && !isNaN(minute)) {
+              return formatTime(hour, minute);
+            }
           }
         }
 
@@ -550,7 +593,9 @@ function generateParamValue(config, allParams = {}) {
           if (match) {
             const hour = parseInt(match[1]);
             const minute = parseInt(match[2]);
-            return formatTime12(hour, minute);
+            if (!isNaN(hour) && !isNaN(minute)) {
+              return formatTime12(hour, minute);
+            }
           }
         }
 
@@ -560,8 +605,10 @@ function generateParamValue(config, allParams = {}) {
             const hour = parseInt(match[1]);
             const minute = parseInt(match[2]);
             const additional = parseInt(match[3]);
-            const result = addMinutes(hour, minute, additional);
-            return formatTime(result.hour, result.minute);
+            if (!isNaN(hour) && !isNaN(minute) && !isNaN(additional)) {
+              const result = addMinutes(hour, minute, additional);
+              return formatTime(result.hour, result.minute);
+            }
           }
         }
 
@@ -570,7 +617,9 @@ function generateParamValue(config, allParams = {}) {
           if (match) {
             const num = parseInt(match[1]);
             const nearest = parseInt(match[2]);
-            return roundToNearest(num, nearest);
+            if (!isNaN(num) && !isNaN(nearest) && nearest !== 0) {
+              return roundToNearest(num, nearest);
+            }
           }
         }
 
@@ -582,7 +631,9 @@ function generateParamValue(config, allParams = {}) {
           }
         }
 
-        return evaluateExpression(formula, allParams);
+        // Fallback to expression evaluation
+        const result = evaluateExpression(formula, allParams);
+        return result !== null ? result : 0;
       }
       return 0;
 
@@ -631,14 +682,18 @@ function generateDistractors(correctAnswer, distractorSpecs, params) {
 
   if (distractorSpecs && distractorSpecs.length > 0) {
     for (const spec of distractorSpecs) {
+      if (distractors.length >= 3) break; // Safety: don't generate more than needed
+      
       // Check if it's a function call
       if (typeof spec === 'string' && spec.includes('(')) {
         try {
           // Replace params first
           let funcCall = spec;
           for (const [key, value] of Object.entries(params)) {
-            funcCall = funcCall.replace(new RegExp(`\\{${key}\\}`, 'g'), 
-              typeof value === 'string' ? `'${value}'` : value);
+            if (value !== null && value !== undefined) {
+              funcCall = funcCall.replace(new RegExp(`\\{${key}\\}`, 'g'), 
+                typeof value === 'string' ? `'${value}'` : value);
+            }
           }
           
           // Create evaluation context with all helper functions
@@ -690,21 +745,35 @@ function generateDistractors(correctAnswer, distractorSpecs, params) {
     }
   }
 
-  // Fill remaining slots with computed distractors
-  while (distractors.length < 3) {
-    const strategies = [
-      correct + 1, correct - 1, correct + 10, correct - 10,
-      correct * 2, Math.floor(correct / 2),
-      correct + 100, correct - 100,
-      Math.round(correct * 1.1), Math.round(correct * 0.9)
-    ];
-
+  // Fill remaining slots with computed distractors - WITH SAFETY LIMIT
+  const strategies = [
+    correct + 1, correct - 1, correct + 10, correct - 10,
+    correct * 2, Math.floor(correct / 2),
+    correct + 100, correct - 100,
+    Math.round(correct * 1.1), Math.round(correct * 0.9)
+  ];
+  
+  let attempts = 0;
+  const maxAttempts = 20; // Safety limit
+  
+  while (distractors.length < 3 && attempts < maxAttempts) {
     const candidate = randomChoice(strategies);
     if (candidate !== correct && 
         candidate > 0 && 
         !distractors.includes(candidate) &&
         !distractors.includes(String(candidate))) {
       distractors.push(candidate);
+    }
+    attempts++;
+  }
+  
+  // If we still don't have enough, just add simple +1, +2, +3
+  while (distractors.length < 3) {
+    const fallback = correct + distractors.length + 1;
+    if (!distractors.includes(fallback)) {
+      distractors.push(fallback);
+    } else {
+      distractors.push(correct - distractors.length - 1);
     }
   }
 
@@ -896,7 +965,30 @@ export function generateTest(templates, count) {
     selected.push(randomChoice(templates));
   }
 
-  return selected.map(template => generateQuestion(template));
+  // Generate questions with error handling
+  const questions = [];
+  for (const template of selected) {
+    try {
+      const question = generateQuestion(template);
+      questions.push(question);
+    } catch (error) {
+      console.error('Failed to generate question from template:', template.id, error);
+      // Push a fallback question instead of crashing
+      questions.push({
+        id: `fallback-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        templateId: template.id || 'unknown',
+        questionText: 'Sample question: What is 2 + 2?',
+        correctAnswer: '4',
+        options: ['3', '4', '5', '6'],
+        answerType: 'multipleChoice',
+        topic: template.topic || 'Unknown',
+        difficulty: 'easy',
+        visual: null
+      });
+    }
+  }
+
+  return questions;
 }
 
 export function generateFocusTest(templates, topic, count = 10) {
