@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getCurrentSession, getStudent } from '../utils/storageManager';
 import { getPerformanceColor } from '../utils/bandCalculator';
+import { formatAnswer } from '../utils/answerUtils';
 
 function Results() {
   const navigate = useNavigate();
@@ -34,6 +35,18 @@ function Results() {
     }
 
     setTest(testResult);
+
+    // Debug logging
+    console.log('=== RESULTS PAGE DEBUG ===');
+    console.log('Test ID:', testId);
+    console.log('Test data:', testResult);
+    console.log('Questions count:', testResult.questions?.length);
+    if (testResult.questions) {
+      const answeredCount = testResult.questions.filter(q => q.studentAnswer && q.studentAnswer !== '').length;
+      console.log('Questions with answers:', answeredCount);
+      console.log('Sample question:', testResult.questions[0]);
+    }
+
     // Expand first 5 questions by default
     setExpandedQuestions(new Set([0, 1, 2, 3, 4]));
   }, [navigate, testId]);
@@ -317,14 +330,14 @@ function Results() {
                         <p className={`text-lg font-medium ${
                           question.isCorrect ? 'text-green-700' : 'text-red-700'
                         }`}>
-                          {question.studentAnswer || '(No answer)'}
+                          {formatAnswer(question.studentAnswer)}
                         </p>
                       </div>
                       {!question.isCorrect && (
                         <div>
                           <p className="text-sm font-medium text-gray-700 mb-1">Correct Answer:</p>
                           <p className="text-lg font-medium text-green-700">
-                            {question.correctAnswer}
+                            {formatAnswer(question.correctAnswer)}
                           </p>
                         </div>
                       )}

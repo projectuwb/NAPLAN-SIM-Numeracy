@@ -10,6 +10,7 @@ import {
 } from '../utils/storageManager';
 import { generateTest, generateFocusTest } from '../utils/questionGenerator';
 import { calculateBandScore } from '../utils/bandCalculator';
+import { compareAnswers, isAnswered } from '../utils/answerUtils';
 import { TEST_CONFIG } from '../utils/constants';
 import Timer from '../components/Timer';
 import Calculator from '../components/Calculator';
@@ -125,7 +126,8 @@ function TestInterface() {
   };
 
   const handleSubmit = () => {
-    const unansweredCount = questions.length - Object.keys(answers).length;
+    const answeredCount = questions.filter((_, index) => isAnswered(answers[index])).length;
+    const unansweredCount = questions.length - answeredCount;
 
     if (unansweredCount > 0) {
       if (!window.confirm(`You have ${unansweredCount} unanswered question(s). Are you sure you want to submit?`)) {
@@ -147,6 +149,10 @@ function TestInterface() {
     if (isSubmitting) return;
     setIsSubmitting(true);
 
+    console.log('=== TEST SUBMISSION DEBUG ===');
+    console.log('Questions:', questions.length);
+    console.log('Answers:', answers);
+
     const endTime = Date.now();
     const timeSpent = Math.floor((endTime - startTime) / 1000); // seconds
 
@@ -154,8 +160,15 @@ function TestInterface() {
     let correctCount = 0;
     const topicBreakdown = {};
     const questionsWithAnswers = questions.map((q, index) => {
-      const studentAnswer = answers[index] || '';
-      const isCorrect = String(studentAnswer).trim().toLowerCase() === String(q.correctAnswer).trim().toLowerCase();
+      const studentAnswer = answers[index];
+      const isCorrect = compareAnswers(studentAnswer, q.correctAnswer);
+
+      console.log(`Q${index + 1}:`, {
+        question: q.questionText.substring(0, 50),
+        studentAnswer,
+        correctAnswer: q.correctAnswer,
+        isCorrect
+      });
 
       if (isCorrect) correctCount++;
 
@@ -169,11 +182,12 @@ function TestInterface() {
       return {
         templateId: q.templateId,
         questionText: q.questionText,
-        studentAnswer,
+        studentAnswer: studentAnswer !== undefined && studentAnswer !== null ? String(studentAnswer) : '',
         correctAnswer: q.correctAnswer,
         isCorrect,
         topic: q.topic,
-        options: q.options
+        options: q.options,
+        visual: q.visual
       };
     });
 
