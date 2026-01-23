@@ -133,6 +133,66 @@ export function clearStudentProgress(studentId) {
 export function exportAllData() {
   return {
     students: getAllStudents(),
-    exportDate: new Date().toISOString()
+    exportDate: new Date().toISOString(),
+    version: '1.0.0'
   };
+}
+
+// Import all data (restore from backup)
+export function importAllData(data) {
+  try {
+    // Validate data structure
+    if (!data || typeof data !== 'object') {
+      throw new Error('Invalid data format');
+    }
+
+    if (!data.students || typeof data.students !== 'object') {
+      throw new Error('Invalid students data');
+    }
+
+    // Validate student objects
+    const studentCount = Object.keys(data.students).length;
+    if (studentCount === 0) {
+      throw new Error('No students found in import data');
+    }
+
+    // Backup current data before import
+    const backup = exportAllData();
+    localStorage.setItem('naplan_backup_before_import', JSON.stringify(backup));
+
+    // Import students
+    localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(data.students));
+
+    return {
+      success: true,
+      studentsImported: studentCount,
+      message: `Successfully imported ${studentCount} student(s)`
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+}
+
+// Restore from last backup
+export function restoreFromBackup() {
+  const backupData = localStorage.getItem('naplan_backup_before_import');
+  if (!backupData) {
+    return {
+      success: false,
+      error: 'No backup found'
+    };
+  }
+
+  try {
+    const backup = JSON.parse(backupData);
+    return importAllData(backup);
+  } catch (error) {
+    return {
+      success: false,
+      error: 'Failed to restore backup: ' + error.message
+    };
+  }
 }

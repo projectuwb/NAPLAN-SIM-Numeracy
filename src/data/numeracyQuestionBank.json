@@ -246,7 +246,7 @@
         "MINUTE": {"type": "choice", "options": [0, 15, 30, 45]}
       },
       "visual": {
-        "type": "analogClock",
+        "type": "clock",
         "hour": "{HOUR}",
         "minute": "{MINUTE}"
       },
@@ -609,7 +609,7 @@
       },
       "visual": {
         "type": "shape",
-        "name": "{SHAPE}"
+        "shapeType": "{SHAPE}"
       },
       "correctAnswer": "symmetryLines({SHAPE})",
       "answerType": "numeric"
