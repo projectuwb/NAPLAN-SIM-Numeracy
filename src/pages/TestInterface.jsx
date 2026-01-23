@@ -14,6 +14,7 @@ import { compareAnswers, isAnswered } from '../utils/answerUtils';
 import { TEST_CONFIG } from '../utils/constants';
 import Timer from '../components/Timer';
 import Calculator from '../components/Calculator';
+import VisualRenderer from '../components/VisualRenderer';
 import questionBank from '../data/numeracyQuestionBank.json';
 
 function TestInterface() {
@@ -282,6 +283,11 @@ function TestInterface() {
               {currentQuestion.questionText}
             </p>
           </div>
+
+          {/* Visual Component */}
+          {currentQuestion.visual && (
+            <VisualRenderer visual={currentQuestion.visual} />
+          )}
 
           {/* Answer Input */}
           {currentQuestion.answerType === 'numeric' ? (

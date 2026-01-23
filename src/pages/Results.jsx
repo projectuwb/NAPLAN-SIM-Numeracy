@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getCurrentSession, getStudent } from '../utils/storageManager';
 import { getPerformanceColor } from '../utils/bandCalculator';
 import { formatAnswer } from '../utils/answerUtils';
+import VisualRenderer from '../components/VisualRenderer';
 
 function Results() {
   const navigate = useNavigate();
@@ -295,6 +296,11 @@ function Results() {
                         {question.questionText}
                       </p>
                     </div>
+
+                    {/* Visual Component */}
+                    {question.visual && (
+                      <VisualRenderer visual={question.visual} />
+                    )}
 
                     {question.options && (
                       <div className="mb-4">

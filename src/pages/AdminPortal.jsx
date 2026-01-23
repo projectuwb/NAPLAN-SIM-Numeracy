@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   hasAdminPassword,
@@ -8,7 +8,8 @@ import {
   createStudent,
   saveStudent,
   deleteStudent,
-  exportAllData
+  exportAllData,
+  importAllData
 } from '../utils/storageManager';
 
 function AdminPortal() {
@@ -22,6 +23,9 @@ function AdminPortal() {
   const [newStudentName, setNewStudentName] = useState('');
   const [newStudentYear, setNewStudentYear] = useState(3);
   const [createdStudent, setCreatedStudent] = useState(null);
+  const [importMessage, setImportMessage] = useState(null);
+  const [showAnalytics, setShowAnalytics] = useState(false);
+  const fileInputRef = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -113,6 +117,52 @@ function AdminPortal() {
     a.download = `naplan-data-${new Date().toISOString().split('T')[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleImportData = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = JSON.parse(e.target.result);
+
+        if (!window.confirm(
+          `This will import ${Object.keys(data.students || {}).length} student(s) and replace all existing data. Are you sure?`
+        )) {
+          return;
+        }
+
+        const result = importAllData(data);
+
+        if (result.success) {
+          setImportMessage({
+            type: 'success',
+            message: result.message
+          });
+          loadStudents();
+        } else {
+          setImportMessage({
+            type: 'error',
+            message: result.error
+          });
+        }
+      } catch (error) {
+        setImportMessage({
+          type: 'error',
+          message: 'Invalid JSON file: ' + error.message
+        });
+      }
+    };
+    reader.readAsText(file);
+
+    // Reset file input
+    event.target.value = '';
   };
 
   const copyToClipboard = (text) => {
@@ -288,7 +338,7 @@ function AdminPortal() {
         </div>
 
         {/* Actions */}
-        <div className="flex gap-4 mb-6">
+        <div className="flex flex-wrap gap-4 mb-6">
           <button
             onClick={() => setShowCreateForm(!showCreateForm)}
             className="btn-primary"
@@ -299,9 +349,203 @@ function AdminPortal() {
             onClick={handleExportData}
             className="btn-secondary"
           >
-            Export Data (JSON)
+            📥 Export Data (JSON)
+          </button>
+          <button
+            onClick={handleImportClick}
+            className="btn-secondary"
+          >
+            📤 Import Data (JSON)
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".json"
+            onChange={handleImportData}
+            style={{ display: 'none' }}
+          />
+          <button
+            onClick={() => setShowAnalytics(!showAnalytics)}
+            className="btn-outline"
+          >
+            {showAnalytics ? '📊 Hide' : '📊 Show'} Analytics
           </button>
         </div>
+
+        {/* Import Message */}
+        {importMessage && (
+          <div className={`card mb-6 ${
+            importMessage.type === 'success'
+              ? 'bg-green-50 border-2 border-green-200'
+              : 'bg-red-50 border-2 border-red-200'
+          }`}>
+            <div className="flex justify-between items-start">
+              <div>
+                <h3 className={`font-medium mb-2 ${
+                  importMessage.type === 'success' ? 'text-green-800' : 'text-red-800'
+                }`}>
+                  {importMessage.type === 'success' ? 'Import Successful!' : 'Import Failed'}
+                </h3>
+                <p className={importMessage.type === 'success' ? 'text-green-700' : 'text-red-700'}>
+                  {importMessage.message}
+                </p>
+              </div>
+              <button
+                onClick={() => setImportMessage(null)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Enhanced Analytics Dashboard */}
+        {showAnalytics && studentList.length > 0 && (
+          <div className="card mb-6">
+            <h2 className="text-xl font-medium mb-6">Detailed Analytics</h2>
+
+            {/* Topic Performance Across All Students */}
+            <div className="mb-8">
+              <h3 className="text-lg font-medium mb-4">Topic Performance (All Students)</h3>
+              {(() => {
+                const topicStats = {};
+                studentList.forEach(student => {
+                  student.tests.forEach(test => {
+                    if (test.topicBreakdown) {
+                      Object.entries(test.topicBreakdown).forEach(([topic, stats]) => {
+                        if (!topicStats[topic]) {
+                          topicStats[topic] = { correct: 0, total: 0 };
+                        }
+                        topicStats[topic].correct += stats.correct;
+                        topicStats[topic].total += stats.total;
+                      });
+                    }
+                  });
+                });
+
+                const topicArray = Object.entries(topicStats)
+                  .map(([topic, stats]) => ({
+                    topic,
+                    correct: stats.correct,
+                    total: stats.total,
+                    percentage: (stats.correct / stats.total) * 100
+                  }))
+                  .sort((a, b) => b.percentage - a.percentage);
+
+                return topicArray.length > 0 ? (
+                  <div className="space-y-3">
+                    {topicArray.map(({ topic, correct, total, percentage }) => (
+                      <div key={topic}>
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="font-medium text-sm">{topic}</span>
+                          <span className={`text-sm font-medium ${
+                            percentage >= 80 ? 'text-green-600' :
+                            percentage >= 60 ? 'text-yellow-600' :
+                            'text-red-600'
+                          }`}>
+                            {correct}/{total} ({percentage.toFixed(0)}%)
+                          </span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div
+                            className={`h-2 rounded-full ${
+                              percentage >= 80 ? 'bg-green-600' :
+                              percentage >= 60 ? 'bg-yellow-600' :
+                              'bg-red-600'
+                            }`}
+                            style={{ width: `${percentage}%` }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500">No topic data available yet</p>
+                );
+              })()}
+            </div>
+
+            {/* Performance by Year Level */}
+            <div className="mb-8">
+              <h3 className="text-lg font-medium mb-4">Performance by Year Level</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {[3, 5, 7].map(year => {
+                  const yearStudents = studentList.filter(s => s.yearLevel === year);
+                  const yearTests = yearStudents.reduce((sum, s) => sum + s.tests.length, 0);
+                  const totalCorrect = yearStudents.reduce((sum, s) =>
+                    sum + s.tests.reduce((tSum, t) => tSum + t.questionsCorrect, 0), 0
+                  );
+                  const totalQuestions = yearStudents.reduce((sum, s) =>
+                    sum + s.tests.reduce((tSum, t) => tSum + t.questionsTotal, 0), 0
+                  );
+                  const avgPercentage = totalQuestions > 0 ? (totalCorrect / totalQuestions) * 100 : 0;
+
+                  return (
+                    <div key={year} className="p-4 bg-gray-50 rounded-lg">
+                      <h4 className="font-medium text-lg mb-2">Year {year}</h4>
+                      <div className="space-y-1 text-sm">
+                        <p><span className="font-medium">Students:</span> {yearStudents.length}</p>
+                        <p><span className="font-medium">Tests:</span> {yearTests}</p>
+                        <p><span className="font-medium">Avg Score:</span> {
+                          avgPercentage > 0 ? `${avgPercentage.toFixed(1)}%` : 'N/A'
+                        }</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Recent Activity */}
+            <div>
+              <h3 className="text-lg font-medium mb-4">Recent Test Activity</h3>
+              {(() => {
+                const recentTests = studentList
+                  .flatMap(student =>
+                    student.tests.map(test => ({
+                      ...test,
+                      studentName: student.name,
+                      yearLevel: student.yearLevel
+                    }))
+                  )
+                  .sort((a, b) => new Date(b.date) - new Date(a.date))
+                  .slice(0, 10);
+
+                return recentTests.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-gray-200">
+                          <th className="text-left py-2">Date</th>
+                          <th className="text-left py-2">Student</th>
+                          <th className="text-left py-2">Year</th>
+                          <th className="text-left py-2">Type</th>
+                          <th className="text-left py-2">Score</th>
+                          <th className="text-left py-2">Band</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {recentTests.map((test, idx) => (
+                          <tr key={idx} className="border-b border-gray-100">
+                            <td className="py-2">{new Date(test.date).toLocaleDateString()}</td>
+                            <td className="py-2">{test.studentName}</td>
+                            <td className="py-2">{test.yearLevel}</td>
+                            <td className="py-2">{test.type === 'full' ? 'Full Test' : `Focus: ${test.focusTopic}`}</td>
+                            <td className="py-2">{test.percentage.toFixed(1)}%</td>
+                            <td className="py-2">Band {test.bandScore}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <p className="text-gray-500">No test activity yet</p>
+                );
+              })()}
+            </div>
+          </div>
+        )}
 
         {/* Create Student Form */}
         {showCreateForm && (
