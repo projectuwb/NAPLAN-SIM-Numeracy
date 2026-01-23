@@ -18,41 +18,51 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Check if branch starts with claude/
-        id: check_branch
-        run: |
-          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
-          echo "branch=$BRANCH_NAME" >> $GITHUB_OUTPUT
-          if [[ $BRANCH_NAME == claude/* ]]; then
-            echo "is_claude_branch=true" >> $GITHUB_OUTPUT
-          else
-            echo "is_claude_branch=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Create Pull Request
-        if: steps.check_branch.outputs.is_claude_branch == 'true'
-        id: create_pr
-        uses: repo-sync/pull-request@v2
-        with:
-          source_branch: ${{ steps.check_branch.outputs.branch }}
-          destination_branch: main
-          pr_title: "Auto-merge: ${{ steps.check_branch.outputs.branch }}"
-          pr_body: |
-            🤖 **Automatic PR from Claude Code**
-
-            This PR was automatically created from branch `${{ steps.check_branch.outputs.branch }}`.
-
-            Changes will be automatically merged to main.
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Auto-merge PR
-        if: steps.check_branch.outputs.is_claude_branch == 'true' && steps.create_pr.outputs.pr_number
-        uses: pascalgn/automerge-action@v0.16.2
+      - name: Create and merge PR
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MERGE_LABELS: ""
-          MERGE_METHOD: squash
-          MERGE_COMMIT_MESSAGE: "pull-request-title"
-          MERGE_FORKS: false
-          MERGE_RETRIES: 6
-          MERGE_RETRY_SLEEP: 10000
+        run: |
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+
+          echo "📋 Checking for existing PR from $BRANCH_NAME to main..."
+
+          # Check if PR already exists
+          PR_NUMBER=$(gh pr list --head "$BRANCH_NAME" --base main --json number --jq '.[0].number')
+
+          if [ -z "$PR_NUMBER" ]; then
+            echo "✨ No existing PR found. Creating new PR..."
+
+            # Create PR
+            PR_NUMBER=$(gh pr create \
+              --title "Auto-merge: $BRANCH_NAME" \
+              --body "🤖 **Automatic PR from Claude Code**
+
+            This PR was automatically created from branch \`$BRANCH_NAME\`.
+
+            Changes will be automatically merged to main." \
+              --base main \
+              --head "$BRANCH_NAME" \
+              --json number \
+              --jq '.number')
+
+            echo "✅ Created PR #$PR_NUMBER"
+          else
+            echo "ℹ️  Found existing PR #$PR_NUMBER"
+          fi
+
+          # Check if PR is open (not already merged/closed)
+          PR_STATE=$(gh pr view "$PR_NUMBER" --json state --jq '.state')
+
+          if [ "$PR_STATE" = "OPEN" ]; then
+            echo "🔄 Merging PR #$PR_NUMBER..."
+
+            # Merge the PR
+            gh pr merge "$PR_NUMBER" \
+              --squash \
+              --delete-branch \
+              --auto
+
+            echo "✅ PR merged successfully!"
+          else
+            echo "ℹ️  PR #$PR_NUMBER is already $PR_STATE. Nothing to do."
+          fi
