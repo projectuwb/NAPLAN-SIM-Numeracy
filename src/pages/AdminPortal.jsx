@@ -416,7 +416,18 @@ function AdminPortal() {
 
                     return (
                       <tr key={student.id} className="border-b border-gray-100 hover:bg-gray-50">
-                        <td className="py-3 px-2 font-mono text-sm">{student.id}</td>
+                        <td className="py-3 px-2 font-mono text-sm">
+                          <div className="flex items-center gap-2">
+                            <span>{student.id}</span>
+                            <button
+                              onClick={() => copyToClipboard(student.id)}
+                              className="text-gray-400 hover:text-blue-600 transition-colors"
+                              title="Copy ID"
+                            >
+                              📋
+                            </button>
+                          </div>
+                        </td>
                         <td className="py-3 px-2">{student.name}</td>
                         <td className="py-3 px-2">{student.yearLevel}</td>
                         <td className="py-3 px-2">

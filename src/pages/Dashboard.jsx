@@ -162,61 +162,6 @@ function Dashboard() {
           </div>
         </div>
 
-        {/* Topic Performance */}
-        {student.tests.length > 0 && (
-          <div className="card mb-8">
-            <h2 className="text-xl font-medium mb-6">📊 Topic Performance</h2>
-            {(() => {
-              const topicStats = {};
-              student.tests.forEach(test => {
-                if (test.topicBreakdown) {
-                  Object.entries(test.topicBreakdown).forEach(([topic, stats]) => {
-                    if (!topicStats[topic]) {
-                      topicStats[topic] = { correct: 0, total: 0 };
-                    }
-                    topicStats[topic].correct += stats.correct;
-                    topicStats[topic].total += stats.total;
-                  });
-                }
-              });
-
-              return (
-                <div className="space-y-3">
-                  {Object.entries(topicStats).map(([topic, stats]) => {
-                    const percentage = (stats.correct / stats.total) * 100;
-                    return (
-                      <div key={topic}>
-                        <div className="flex justify-between items-center mb-1">
-                          <span className="text-sm font-medium">{topic}</span>
-                          <span className={`text-sm font-medium ${
-                            percentage >= 80 ? 'text-green-600' :
-                            percentage >= 60 ? 'text-yellow-600' :
-                            percentage >= 40 ? 'text-orange-600' :
-                            'text-red-600'
-                          }`}>
-                            {percentage.toFixed(0)}% {percentage < 70 && '⚠️'}
-                          </span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div
-                            className={`h-2 rounded-full ${
-                              percentage >= 80 ? 'bg-green-600' :
-                              percentage >= 60 ? 'bg-yellow-600' :
-                              percentage >= 40 ? 'bg-orange-600' :
-                              'bg-red-600'
-                            }`}
-                            style={{ width: `${percentage}%` }}
-                          />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              );
-            })()}
-          </div>
-        )}
-
         {/* Start New Test */}
         <div className="mb-8">
           <h2 className="text-xl font-medium mb-4">Start New Test</h2>
@@ -279,6 +224,61 @@ function Dashboard() {
             </div>
           </div>
         </div>
+
+        {/* Topic Performance */}
+        {student.tests.length > 0 && (
+          <div className="card mb-8">
+            <h2 className="text-xl font-medium mb-6">📊 Topic Performance</h2>
+            {(() => {
+              const topicStats = {};
+              student.tests.forEach(test => {
+                if (test.topicBreakdown) {
+                  Object.entries(test.topicBreakdown).forEach(([topic, stats]) => {
+                    if (!topicStats[topic]) {
+                      topicStats[topic] = { correct: 0, total: 0 };
+                    }
+                    topicStats[topic].correct += stats.correct;
+                    topicStats[topic].total += stats.total;
+                  });
+                }
+              });
+
+              return (
+                <div className="space-y-3">
+                  {Object.entries(topicStats).map(([topic, stats]) => {
+                    const percentage = (stats.correct / stats.total) * 100;
+                    return (
+                      <div key={topic}>
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-sm font-medium">{topic}</span>
+                          <span className={`text-sm font-medium ${
+                            percentage >= 80 ? 'text-green-600' :
+                            percentage >= 60 ? 'text-yellow-600' :
+                            percentage >= 40 ? 'text-orange-600' :
+                            'text-red-600'
+                          }`}>
+                            {percentage.toFixed(0)}% {percentage < 70 && '⚠️'}
+                          </span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div
+                            className={`h-2 rounded-full ${
+                              percentage >= 80 ? 'bg-green-600' :
+                              percentage >= 60 ? 'bg-yellow-600' :
+                              percentage >= 40 ? 'bg-orange-600' :
+                              'bg-red-600'
+                            }`}
+                            style={{ width: `${percentage}%` }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })()}
+          </div>
+        )}
 
         {/* Recent Tests */}
         {recentTests.length > 0 && (
