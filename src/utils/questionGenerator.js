@@ -6,7 +6,6 @@ function randomInt(min, max) {
 }
 
 function randomEvenInt(min, max) {
-  // Generate even number in range
   let num = randomInt(min, max);
   if (num % 2 !== 0) {
     num = num < max ? num + 1 : num - 1;
@@ -14,9 +13,9 @@ function randomEvenInt(min, max) {
   return num;
 }
 
-function randomDecimal(min, max, places = 2) {
-  const value = Math.random() * (max - min) + min;
-  return parseFloat(value.toFixed(places));
+function randomDecimal(min, max, step = 0.01) {
+  const steps = Math.floor((max - min) / step);
+  return min + (Math.floor(Math.random() * (steps + 1)) * step);
 }
 
 function randomChoice(options) {
@@ -47,19 +46,12 @@ function formatTime12(hour, minute) {
   return `${h12}:${String(minute).padStart(2, '0')} ${suffix}`;
 }
 
-function addMinutes(hour, minute, additionalMinutes) {
-  const totalMinutes = hour * 60 + minute + additionalMinutes;
-  const newHour = Math.floor(totalMinutes / 60) % 24;
-  const newMinute = totalMinutes % 60;
-  return { hour: newHour, minute: newMinute };
-}
-
 // Rounding functions
 function roundToNearest(num, nearest) {
   return Math.round(num / nearest) * nearest;
 }
 
-// Symmetry helper
+// Domain-specific functions
 function getSymmetryCount(shape) {
   const counts = {
     'square': 4,
@@ -70,14 +62,47 @@ function getSymmetryCount(shape) {
     'hexagon': 6,
     'pentagon': 5
   };
-  return counts[shape] || 0;
+  return counts[shape.toLowerCase()] || 0;
+}
+
+function daysInMonth(month) {
+  const days = {
+    'january': 31, 'february': 28, 'march': 31, 'april': 30,
+    'may': 31, 'june': 30, 'july': 31, 'august': 31,
+    'september': 30, 'october': 31, 'november': 30, 'december': 31
+  };
+  return days[month.toLowerCase()] || 30;
+}
+
+function shapeSides(shape) {
+  const sides = {
+    'triangle': 3, 'square': 4, 'rectangle': 4,
+    'pentagon': 5, 'hexagon': 6, 'octagon': 8
+  };
+  return sides[shape.toLowerCase()] || 0;
+}
+
+function evenOdd(num) {
+  return num % 2 === 0 ? 'even' : 'odd';
+}
+
+// Fraction helpers
+function randomEquivalentFraction(num, denom) {
+  const multipliers = [2, 3, 4, 5];
+  const mult = randomChoice(multipliers);
+  return `${num * mult}/${denom * mult}`;
+}
+
+function sortNumbers(numbers) {
+  return numbers.sort((a, b) => a - b).join(', ');
 }
 
 // Safe expression evaluator
 function evaluateExpression(expr, params = {}) {
   try {
+    let evalExpr = String(expr);
+
     // Replace parameter placeholders
-    let evalExpr = expr;
     for (const [key, value] of Object.entries(params)) {
       evalExpr = evalExpr.replace(new RegExp(`\\{${key}\\}`, 'g'), value);
     }
@@ -85,43 +110,43 @@ function evaluateExpression(expr, params = {}) {
     // Replace mathematical operators
     evalExpr = evalExpr.replace(/×/g, '*').replace(/÷/g, '/');
 
-    // Remove curly braces if any remain
+    // Remove remaining braces
     evalExpr = evalExpr.replace(/[{}]/g, '');
 
-    // Safe evaluation using Function constructor
-    // This is safer than eval() but still use with caution
+    // Safe evaluation
     const result = Function('"use strict"; return (' + evalExpr + ')')();
-    return Math.round(result * 1000) / 1000; // Round to 3 decimal places
+    return Math.round(result * 1000) / 1000;
   } catch (e) {
-    console.error('Expression evaluation error:', e, 'Expression:', expr);
-    return null;
+    console.error('Expression evaluation error:', expr, e);
+    return 0;
   }
 }
 
-// Extract digit from number (for place value questions)
+// Extract digit from number
 function extractDigit(number) {
-  const digits = String(number).split('').filter(d => d !== '.');
-  return randomChoice(digits);
+  const digits = String(number).split('').filter(d => d !== '.' && d !== '-');
+  // Ensure unique digits when possible
+  const uniqueDigits = [...new Set(digits)];
+  return randomChoice(uniqueDigits.length > 1 ? uniqueDigits : digits);
 }
 
 // Calculate place value
 function placeValue(number, digit) {
   const numStr = String(number);
-  const digitPos = numStr.indexOf(digit);
+  const digitStr = String(digit);
 
+  // Find FIRST occurrence of the digit
+  const digitPos = numStr.indexOf(digitStr);
   if (digitPos === -1) return 0;
 
   const decimalPos = numStr.indexOf('.');
   let placePosition;
 
   if (decimalPos === -1) {
-    // No decimal point - count from right
     placePosition = numStr.length - digitPos - 1;
   } else if (digitPos < decimalPos) {
-    // Before decimal point
     placePosition = decimalPos - digitPos - 1;
   } else {
-    // After decimal point
     placePosition = -(digitPos - decimalPos);
   }
 
@@ -130,51 +155,43 @@ function placeValue(number, digit) {
 
 // Generate parameter value based on config
 function generateParamValue(config, allParams = {}) {
+  if (!config || !config.type) return 0;
+
   switch (config.type) {
     case 'integer': {
-      // Handle even constraint
       if (config.constraint === 'even') {
         return randomEvenInt(config.min, config.max);
       }
 
-      // Handle other constraints
       let value;
       let attempts = 0;
       do {
         value = randomInt(config.min, config.max);
-
         if (!config.constraint) break;
 
-        // Evaluate constraint
         try {
-          let constraint = config.constraint;
-          // Replace param references
+          let constraint = String(config.constraint);
           for (const [key, val] of Object.entries(allParams)) {
             constraint = constraint.replace(new RegExp(key, 'g'), val);
           }
-          // Replace 'value' reference
           const constraintMet = Function('value', `"use strict"; return ${constraint};`)(value);
           if (constraintMet) break;
         } catch (e) {
-          console.warn('Constraint evaluation error:', e);
           break;
         }
 
         attempts++;
-        if (attempts > 100) {
-          console.warn('Could not satisfy constraint, using unconstrained value');
-          break;
-        }
+        if (attempts > 100) break;
       } while (true);
 
       return value;
     }
 
     case 'decimal':
-      return randomDecimal(config.min, config.max, config.places || 2);
+      return randomDecimal(config.min, config.max, config.step || 0.01);
 
     case 'choice':
-      return randomChoice(config.options);
+      return randomChoice(config.options || [0]);
 
     case 'name':
       return randomName();
@@ -187,65 +204,11 @@ function generateParamValue(config, allParams = {}) {
 
     case 'computed':
       if (config.formula) {
-        // Replace placeholders in formula
-        let formula = config.formula;
-        for (const [key, value] of Object.entries(allParams)) {
-          formula = formula.replace(new RegExp(`\\{${key}\\}`, 'g'), value);
-        }
-
-        // Handle special functions
-        if (formula.includes('formatTime(')) {
-          const match = formula.match(/formatTime\(([^,]+),\s*([^)]+)\)/);
-          if (match) {
-            const hour = parseInt(match[1]);
-            const minute = parseInt(match[2]);
-            return formatTime(hour, minute);
-          }
-        }
-
-        if (formula.includes('formatTime12(')) {
-          const match = formula.match(/formatTime12\(([^,]+),\s*([^)]+)\)/);
-          if (match) {
-            const hour = parseInt(match[1]);
-            const minute = parseInt(match[2]);
-            return formatTime12(hour, minute);
-          }
-        }
-
-        if (formula.includes('addMinutes(')) {
-          const match = formula.match(/addMinutes\(([^,]+),\s*([^,]+),\s*([^)]+)\)/);
-          if (match) {
-            const hour = parseInt(match[1]);
-            const minute = parseInt(match[2]);
-            const additional = parseInt(match[3]);
-            const result = addMinutes(hour, minute, additional);
-            return formatTime(result.hour, result.minute);
-          }
-        }
-
-        if (formula.includes('roundToNearest(')) {
-          const match = formula.match(/roundToNearest\(([^,]+),\s*([^)]+)\)/);
-          if (match) {
-            const num = parseInt(match[1]);
-            const nearest = parseInt(match[2]);
-            return roundToNearest(num, nearest);
-          }
-        }
-
-        if (formula.includes('getSymmetryCount(')) {
-          const match = formula.match(/getSymmetryCount\(([^)]+)\)/);
-          if (match) {
-            const shape = match[1].replace(/['"]/g, '');
-            return getSymmetryCount(shape);
-          }
-        }
-
-        return evaluateExpression(formula, allParams);
+        return evaluateExpression(config.formula, allParams);
       }
       return 0;
 
     default:
-      console.warn('Unknown parameter type:', config.type);
       return 0;
   }
 }
@@ -254,7 +217,8 @@ function generateParamValue(config, allParams = {}) {
 function generateParameters(paramsConfig) {
   const params = {};
 
-  // Generate parameters in order to handle dependencies
+  if (!paramsConfig) return params;
+
   for (const [key, config] of Object.entries(paramsConfig)) {
     params[key] = generateParamValue(config, params);
   }
@@ -264,168 +228,215 @@ function generateParameters(paramsConfig) {
 
 // Replace placeholders in string
 function replacePlaceholders(template, params) {
-  let result = template;
+  if (!template) return '';
+  let result = String(template);
+
   for (const [key, value] of Object.entries(params)) {
     result = result.replace(new RegExp(`\\{${key}\\}`, 'g'), value);
   }
+
   return result;
 }
 
-// Generate distractors for multiple choice
-function generateDistractors(correctAnswer, distractorSpecs, params) {
-  const distractors = [];
-  const correct = parseFloat(correctAnswer);
+// Replace placeholders in visual object
+function processVisual(visual, params) {
+  if (!visual) return null;
 
-  if (distractorSpecs && distractorSpecs.length > 0) {
-    // Use provided distractor formulas
-    for (const spec of distractorSpecs) {
-      const distractor = evaluateExpression(spec, params);
-      if (distractor !== null && distractor !== correct) {
-        distractors.push(distractor);
+  const processed = JSON.parse(JSON.stringify(visual));
+
+  // Process all string values in the visual object recursively
+  function processValue(obj) {
+    if (typeof obj === 'string') {
+      return replacePlaceholders(obj, params);
+    } else if (typeof obj === 'object' && obj !== null) {
+      for (const key in obj) {
+        obj[key] = processValue(obj[key]);
       }
+    }
+    return obj;
+  }
+
+  return processValue(processed);
+}
+
+// Generate distractors for multiple choice
+function generateDistractors(correctAnswer, distractorSpecs, params, answerType = 'numeric') {
+  const distractors = new Set();
+
+  // Handle text-based distractors
+  if (Array.isArray(distractorSpecs) && distractorSpecs.length > 0) {
+    if (typeof distractorSpecs[0] === 'string' && isNaN(parseFloat(distractorSpecs[0]))) {
+      // Text distractors - use as-is
+      distractorSpecs.forEach(d => {
+        if (d !== correctAnswer) {
+          distractors.add(replacePlaceholders(d, params));
+        }
+      });
+
+      // Return if we have enough
+      if (distractors.size >= 3) {
+        return Array.from(distractors).slice(0, 3);
+      }
+    } else {
+      // Numeric or expression distractors
+      distractorSpecs.forEach(spec => {
+        const value = evaluateExpression(String(spec), params);
+        if (value !== null && value !== parseFloat(correctAnswer)) {
+          distractors.add(String(value));
+        }
+      });
     }
   }
 
-  // Fill remaining slots with computed distractors
-  while (distractors.length < 3) {
+  // Fill remaining with numeric strategies if needed
+  if (distractors.size < 3 && !isNaN(parseFloat(correctAnswer))) {
+    const correct = parseFloat(correctAnswer);
     const strategies = [
       correct - 1,
       correct + 1,
-      correct + 10,
       correct - 10,
+      correct + 10,
       correct * 2,
       Math.floor(correct / 2),
       correct + 100,
       correct - 100,
       Math.round(correct * 1.1),
-      Math.round(correct * 0.9)
+      Math.round(correct * 0.9),
+      correct - 5,
+      correct + 5
     ];
 
-    const candidate = randomChoice(strategies);
-    if (candidate !== correct &&
-        candidate > 0 &&
-        !distractors.includes(candidate) &&
-        candidate !== Math.floor(candidate) ? candidate.toFixed(2) !== correct.toFixed(2) : true) {
-      distractors.push(candidate);
+    for (const candidate of shuffleArray(strategies)) {
+      if (candidate > 0 &&
+          candidate !== correct &&
+          !distractors.has(String(candidate))) {
+        distractors.add(String(candidate));
+        if (distractors.size >= 3) break;
+      }
     }
   }
 
-  return distractors.slice(0, 3).map(d =>
-    typeof d === 'number' && d % 1 !== 0 ? d.toFixed(2) : String(d)
-  );
+  return Array.from(distractors).slice(0, 3);
 }
 
-// Validation function
-function validateQuestion(question, template) {
-  const errors = [];
+// Calculate correct answer
+function calculateCorrectAnswer(answerExpr, params, template) {
+  if (!answerExpr) return '0';
 
-  // Check for unreplaced placeholders
-  const placeholderRegex = /\{[A-Z_0-9]+\}/g;
-  const unreplaced = question.questionText.match(placeholderRegex);
-  if (unreplaced) {
-    errors.push(`Unreplaced variables: ${unreplaced.join(', ')}`);
+  const exprStr = String(answerExpr);
+
+  // Handle special function calls
+  if (exprStr.includes('placeValue(')) {
+    const match = exprStr.match(/placeValue\(\{([^}]+)\},\s*\{([^}]+)\}\)/);
+    if (match) {
+      return String(placeValue(params[match[1]], params[match[2]]));
+    }
   }
 
-  // Check for null/undefined
-  if (question.questionText.includes('null') || question.questionText.includes('undefined')) {
-    errors.push('Question text contains null/undefined');
+  if (exprStr.includes('symmetryLines(') || exprStr.includes('getSymmetryCount(')) {
+    const match = exprStr.match(/(?:symmetryLines|getSymmetryCount)\(\{?([^}]+)\}?\)/);
+    if (match) {
+      const shape = params[match[1]] || match[1].replace(/['"]/g, '');
+      return String(getSymmetryCount(shape));
+    }
   }
 
-  if (question.correctAnswer === null || question.correctAnswer === 'null') {
-    errors.push('Correct answer is null');
+  if (exprStr.includes('daysInMonth(')) {
+    const match = exprStr.match(/daysInMonth\(\{?([^}]+)\}?\)/);
+    if (match) {
+      const month = params[match[1]] || match[1].replace(/['"]/g, '');
+      return String(daysInMonth(month));
+    }
   }
 
-  if (errors.length > 0) {
-    console.error('Question validation failed:', {
-      templateId: template.id,
-      errors,
-      questionText: question.questionText,
-      correctAnswer: question.correctAnswer
-    });
-    // Return a fallback question instead of breaking
-    return {
-      ...question,
-      questionText: `[Error in template ${template.id}] ${question.questionText}`,
-      correctAnswer: '0'
-    };
+  if (exprStr.includes('shapeSides(')) {
+    const match = exprStr.match(/shapeSides\(\{?([^}]+)\}?\)/);
+    if (match) {
+      const shape = params[match[1]] || match[1].replace(/['"]/g, '');
+      return String(shapeSides(shape));
+    }
   }
 
-  return question;
+  if (exprStr.includes('evenOdd(')) {
+    const match = exprStr.match(/evenOdd\(\{?([^}]+)\}?\)/);
+    if (match) {
+      const num = params[match[1]] || parseInt(match[1]);
+      return evenOdd(num);
+    }
+  }
+
+  if (exprStr.includes('roundToNearest(') || exprStr.includes('round(')) {
+    const match = exprStr.match(/round(?:ToNearest)?\(([^,]+),\s*([^)]+)\)/);
+    if (match) {
+      const num = parseFloat(replacePlaceholders(match[1], params));
+      const nearest = parseFloat(replacePlaceholders(match[2], params));
+      return String(roundToNearest(num, nearest));
+    }
+  }
+
+  if (exprStr.includes('randomEquivalent(')) {
+    const match = exprStr.match(/randomEquivalent\((\d+),\s*(\d+)\)/);
+    if (match) {
+      return randomEquivalentFraction(parseInt(match[1]), parseInt(match[2]));
+    }
+  }
+
+  if (exprStr.includes('sortNumbers(')) {
+    const match = exprStr.match(/sortNumbers\(\[([^\]]+)\]\)/);
+    if (match) {
+      const numbers = match[1].split(',').map(n => {
+        const replaced = replacePlaceholders(n.trim(), params);
+        return parseFloat(replaced.replace(/[{}]/g, ''));
+      });
+      return sortNumbers(numbers);
+    }
+  }
+
+  // Check if it's a direct value (no placeholders or expressions)
+  if (!exprStr.includes('{') && !exprStr.match(/[+\-*/]/)) {
+    return exprStr;
+  }
+
+  // Evaluate as expression
+  const result = evaluateExpression(exprStr, params);
+
+  if (result === null || isNaN(result) || !isFinite(result)) {
+    console.warn(`Invalid answer for template ${template.id}:`, exprStr, '→', result);
+    return '0';
+  }
+
+  return result % 1 === 0 ? String(result) : result.toFixed(2);
 }
 
 // Main question generation function
 export function generateQuestion(template) {
   try {
-    // 1. Generate random parameter values
+    // 1. Generate parameters
     const params = generateParameters(template.params || {});
 
-    // 2. Replace placeholders in template
-    let questionText = replacePlaceholders(template.template, params);
+    // 2. Replace placeholders in question text
+    const questionText = replacePlaceholders(template.template, params);
 
     // 3. Calculate correct answer
-    let correctAnswer = null;
+    const correctAnswer = calculateCorrectAnswer(template.correctAnswer, params, template);
 
-    // Handle different correct answer types
-    if (typeof template.correctAnswer === 'string') {
-      // Check for special functions first
-      if (template.correctAnswer.includes('placeValue(')) {
-        const match = template.correctAnswer.match(/placeValue\(\{([^}]+)\},\s*\{([^}]+)\}\)/);
-        if (match) {
-          const num = params[match[1]];
-          const digit = params[match[2]];
-          correctAnswer = placeValue(num, digit);
-        }
-      } else if (template.correctAnswer.includes('roundToNearest(')) {
-        const expr = replacePlaceholders(template.correctAnswer, params);
-        const match = expr.match(/roundToNearest\(([^,]+),\s*([^)]+)\)/);
-        if (match) {
-          const num = parseFloat(match[1]);
-          const nearest = parseFloat(match[2]);
-          correctAnswer = roundToNearest(num, nearest);
-        }
-      } else if (template.correctAnswer.includes('getSymmetryCount(')) {
-        const expr = replacePlaceholders(template.correctAnswer, params);
-        const match = expr.match(/getSymmetryCount\(['"]*([^'"]+)['"]*\)/);
-        if (match) {
-          correctAnswer = getSymmetryCount(match[1]);
-        }
-      } else {
-        // Regular expression evaluation
-        const correctAnswerExpr = replacePlaceholders(template.correctAnswer, params);
-        correctAnswer = evaluateExpression(correctAnswerExpr, params);
-      }
-    } else {
-      correctAnswer = template.correctAnswer;
-    }
-
-    // Ensure correct answer is properly formatted
-    if (correctAnswer === null || correctAnswer === undefined) {
-      console.warn(`Null correct answer for template ${template.id}, using 0`);
-      correctAnswer = '0';
-    } else if (typeof correctAnswer === 'number') {
-      if (isNaN(correctAnswer) || !isFinite(correctAnswer)) {
-        console.warn(`Invalid correct answer for template ${template.id}:`, correctAnswer);
-        correctAnswer = '0';
-      } else {
-        correctAnswer = correctAnswer % 1 === 0 ? String(correctAnswer) : correctAnswer.toFixed(2);
-      }
-    } else {
-      correctAnswer = String(correctAnswer);
-    }
-
-    // 4. Generate options for multiple choice questions
+    // 4. Generate options for multiple choice
     let options = null;
     if (template.answerType === 'multipleChoice') {
       const distractors = generateDistractors(
         correctAnswer,
         template.distractors || [],
-        params
+        params,
+        template.answerType
       );
       options = shuffleArray([correctAnswer, ...distractors]);
     }
 
-    // 5. Create question object
-    const question = {
+    // 5. Process visual (replace placeholders in visual object)
+    const visual = processVisual(template.visual, params);
+
+    // 6. Create question object
+    return {
       id: `${template.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       templateId: template.id,
       questionText,
@@ -434,19 +445,15 @@ export function generateQuestion(template) {
       answerType: template.answerType,
       topic: template.topic,
       difficulty: template.difficulty || 'medium',
-      visual: template.visual || null
+      visual
     };
-
-    // 6. Validate before returning
-    return validateQuestion(question, template);
 
   } catch (error) {
     console.error('Error generating question from template:', template.id, error);
-    // Return fallback question
     return {
       id: `error-${Date.now()}`,
       templateId: template.id,
-      questionText: `[Error generating question from template ${template.id}]`,
+      questionText: `Error: Unable to generate question from template ${template.id}`,
       correctAnswer: '0',
       options: null,
       answerType: 'numeric',
@@ -459,16 +466,13 @@ export function generateQuestion(template) {
 
 // Generate full test
 export function generateTest(templates, count) {
-  // Shuffle templates to get variety
   const shuffled = shuffleArray(templates);
   const selected = shuffled.slice(0, Math.min(count, templates.length));
 
-  // If we need more questions than templates, reuse templates
   while (selected.length < count) {
     selected.push(randomChoice(templates));
   }
 
-  // Generate questions from selected templates
   return selected.map(template => generateQuestion(template));
 }
 
